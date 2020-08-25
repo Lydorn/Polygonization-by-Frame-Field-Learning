@@ -1,0 +1,58 @@
+{
+
+  "method": ["simple", "acm"],  // Possible options: simple, acm, asm, tracing or a list: ["simple", "asm", "asm"] to apply several
+
+  "common_params": {
+    "init_data_level": 0.5   // Seg level to init contours for all methods
+  },
+
+  "simple_method": {
+    "data_level": 0.5,  // Seg level to init contours
+    "tolerance": [0.125],  // Can be a list of values to apply
+    "seg_threshold": 0.5,
+    "min_area": 10
+  },
+
+  "asm_method": {
+    "init_method": "marching_squares",  // Can be either "skeleton" or "marching_squares"
+    "data_level": 0.5,
+    "loss_params": {
+        "coefs": {
+            "step_thresholds": [0, 100, 200, 300],  // From 0 to 500: gradually go from coefs[0] to coefs[1]
+            "data":         [1.0,  0.1,  0.0, 0.0],
+            "crossfield":   [0.0, 0.05,  0.0, 0.0],
+            "length":       [0.1, 0.01, 0.0, 0.0],
+            "curvature":    [0.0,  0.0,  1.0, 0.0],
+            "corner":       [0.0,  0.0,  0.5, 0.0],
+            "junction":     [0.0,  0.0,  0.5, 0.0]
+        },
+        "curvature_dissimilarity_threshold": 2,  // In pixels: for each sub-paths, if the dissimilarity (in the same sense as in the Ramer-Douglas-Peucker alg) is lower than straightness_threshold, then optimize the curve angles to be zero.
+        "corner_angles": [45, 90, 135],  // In degrees: target angles for corners.
+        "corner_angle_threshold": 22.5,  // If a corner angle is less than this threshold away from any angle in corner_angles, optimize it.
+        "junction_angles": [0, 45, 90, 135],  // In degrees: target angles for junction corners.
+        "junction_angle_weights": [1, 0.01, 0.1, 0.01],  // Order of decreassing importance: straight, right-angle, then 45° junction corners.
+        "junction_angle_threshold": 22.5  // If a junction corner angle is less than this threshold away from any angle in junction_angles, optimize it.
+    },
+    "lr": 0.1,
+    "gamma": 0.995,
+    "device": "cuda",
+    "tolerance": [0.125, 1],
+    "seg_threshold": 0.5,
+    "min_area": 10
+},
+
+  "acm_method": {
+    "steps": 500,
+    "data_level": 0.5,  // Seg level to optimize contours (better set it equal to common_params.init_data_level
+    "data_coef": 0.1,
+    "length_coef": 0.4,
+    "crossfield_coef": 0.5,
+    "poly_lr": 0.01,
+    "warmup_iters": 100,
+    "warmup_factor": 0.1,
+    "device": "cuda",
+    "tolerance": [0.125, 1],  // Can be a list of values to apply
+    "seg_threshold": 0.5,  // Remove polygons below that threshold TODO: lower this and see results
+    "min_area": 10
+  }
+}

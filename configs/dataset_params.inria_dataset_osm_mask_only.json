@@ -1,0 +1,13 @@
+{
+  "root_dirname": "AerialImageDataset",
+  "pre_process": true,
+  "gt_source": "disk",
+  "gt_type": "npy",
+  "gt_dirname": "gt_polygons",  // gt_polygons are OSM annotations that were pre-downloaded and projected to the image's coordinate system
+  "mask_only": true,  // Discard the RGB image, the input image to the network is a single-channel binary mask of the polygons.
+  "small": false,
+  "data_patch_size": 725,
+  "input_patch_size": 512,
+
+  "train_fraction": 0.75  // Remaining is validation
+}

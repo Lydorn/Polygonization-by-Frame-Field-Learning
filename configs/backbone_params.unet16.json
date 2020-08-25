@@ -1,0 +1,5 @@
+{
+    "name": "unet",
+    "input_features": 3,
+    "features": 16
+}

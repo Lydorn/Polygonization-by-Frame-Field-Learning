@@ -1,0 +1,8 @@
+{
+    "name": "ictnet",
+    "preset_model": "FC-DenseNet103",  // FC-DenseNet56, FC-DenseNet67 and FC-DenseNet103 are possible
+    "in_channels": 3,
+    "out_channels": 32,
+    "dropout_2d": 0.0,  // Default: 0.2
+    "efficient": true  // If true, use gradient checkpointing to reduce memory at the expense of some speed
+}

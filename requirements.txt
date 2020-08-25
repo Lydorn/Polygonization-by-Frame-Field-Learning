@@ -1,0 +1,5 @@
+# Install lydorn_utils as development mode
+-e ./lydorn_utils # Path to the submodule
+
+# Install torch_lydorn as development mode
+-e ./pytorch_lydorn # Path to the submodule

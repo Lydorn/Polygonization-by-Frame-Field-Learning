@@ -1,0 +1,23 @@
+{
+  "defaults_filepath": "configs/config.defaults.inria_dataset_polygonized.json",
+
+  "run_name": "inria_dataset_polygonized_small.unet_resnet101_pretrained.no_aug",
+
+  "dataset_params": {
+    "small": true
+  },
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.unet_resnet101.json",  // Path from the project's root to a JSON with default values for backbone_params
+    "pretrained": true
+  },
+
+   "optim_params": {
+    "gamma": 1.0,
+    "log_steps": 10
+  },
+
+  "data_aug_params": {
+    "enable": false
+  }
+}

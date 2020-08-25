@@ -1,0 +1,13 @@
+{
+  "root_dirname": "AerialImageDataset",
+  "pre_process": true,
+  "gt_source": "disk",
+  "gt_type": "npy",
+  "gt_dirname": "aligned_gt_polygons_2",  // aligned_gt_polygons_2 are annotations that are the aligned version of OSM stored in gt_polygons
+  "mask_only": false,  // This is the default value to not use this option
+  "small": false,
+  "data_patch_size": 725,
+  "input_patch_size": 512,
+
+  "train_fraction": 0.75  // Remaining is validation
+}

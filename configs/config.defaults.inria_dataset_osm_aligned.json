@@ -1,0 +1,15 @@
+{
+  "defaults_filepath": "configs/config.defaults.json",
+
+  "dataset_params": {
+    "defaults_filepath": "configs/dataset_params.inria_dataset_osm_aligned.json"  // Path from the project's root to a JSON with default values for dataset_params
+  },
+
+  "eval_params" : {
+    "defaults_filepath": "configs/eval_params.inria_dataset.json"  // Path from the project's root to a JSON with default values for eval_params
+  },
+
+  "optim_params": {
+    "gamma": 0.99
+  }
+}

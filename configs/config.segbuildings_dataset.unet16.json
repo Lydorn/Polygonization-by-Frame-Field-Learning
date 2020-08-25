@@ -1,0 +1,20 @@
+{
+  "defaults_filepath": "configs/config.defaults.json",
+
+  "run_name": "segbuildings_dataset.unet16",
+
+
+
+
+  "dataset_params": {
+    "defaults_filepath": "configs/dataset_params.segbuildings_dataset.json"  // Path from the project's root to a JSON with default values for dataset_params
+  },
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.unet16.json"  // Path from the project's root to a JSON with default values for backbone_params
+  },
+
+  "optim_params": {
+    "batch_size": 8  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  }
+}

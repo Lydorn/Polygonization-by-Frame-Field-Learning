@@ -1,0 +1,44 @@
+{
+  "results_dirname": "eval_runs",
+
+  "test_time_augmentation": false,
+
+  "batch_size_mult": 64,  // Inference has a certain batch_size, post-process (polygonization included) will use a batch of size batch_size*batch_size_mult
+    // ASM:
+    // eval_batch_size=32, batch_size_mult=1: finished 96 batches in 290s: 0,094401042s/sample
+    // eval_batch_size=32, batch_size_mult=16: finished 96 batches in 167s: 0,054361979s/sample
+    // eval_batch_size=32, batch_size_mult=8: finished 96 batches in 172s: 0,055989583s/sample
+    // eval_batch_size=12, batch_size_mult=96: finished 192 batches in 125s: 0,098958333s/sample
+    // eval_batch_size=8, batch_size_mult=128: finished 256 batches in 114s: 0,055664063s/sample
+    // eval_batch_size=16, batch_size_mult=64: finished 128 batches in 107s: 0,052246094s/sample
+    // (no saving of output) eval_batch_size=16, batch_size_mult=64: finished 128 batches in 89s: 0,043457031s/sample
+
+    // ACM:
+    // (no saving of output) eval_batch_size=16, batch_size_mult=64: finished 128 batches in 85s: 0,041503906s/sample
+    // With TTA (x8)  eval_batch_size=16, batch_size_mult=64: finished 128 batches in 366s: 0,178710938s/sample
+
+  "patch_size": null,
+  "patch_overlap": 200,
+
+  "seg_threshold": 0.5,
+
+  "save_individual_outputs": {
+    "image": false,
+    "seg_gt": false,
+    "seg": false,
+    "seg_mask": false,
+    "seg_opencities_mask": false,
+    "seg_luxcarta": false,
+    "crossfield": false,
+    "uv_angles": false,
+    "poly_shapefile": false,
+    "poly_geojson": false,
+    "poly_viz": false
+  },
+
+  "save_aggregated_outputs": {
+    "stats": false,
+    "seg_coco": false,
+    "poly_coco": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "root_dirname": "AerialImageDataset",
+  "pre_process": false,
+  "gt_source": "disk",
+  "gt_type": "tif",
+  "gt_dirname": "gt",  // gt_polygonized are annotations that are the polygonized version of the original gt masks on inria dataset
+  "mask_only": false,  // This is the default value to not use this option
+  "small": false,
+  "data_patch_size": 425,
+  "input_patch_size": 300,
+
+  "train_fraction": 0.75  // Remaining is validation
+}

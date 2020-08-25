@@ -1,0 +1,88 @@
+{
+  "run_name": "mapping_dataset.unet16.coupling_losses_0.4",
+
+  "data_dir_candidates": [
+    "/local/shared/data", // try cluster local node first
+    "/data/titane/user/nigirard/data", // Try cluster /data directory
+    "~/data", // In home directory (docker)
+    "/data" // In landsat's /data volume (docker)
+  ],
+  "data_root_partial_dirpath": "mapping_challenge_dataset",
+  "dataset_params": {
+    "small": false
+  },
+  "num_workers": 10,
+  "data_split_params": {
+    "seed": 0,  // Change this to change the random splitting of data in train/val/test
+    "train_fraction": 0.75,
+    "val_fraction": 0.25 // test_fraction is the rest
+  },
+  "data_aug_params": {
+    "enable": true,
+    "vflip": true,
+    "rotate": true,
+    "color_jitter": true,
+    "device": "cuda"
+  },
+
+  "device": "cuda",  // Only has effects when mode is val or test. When mode is train, always use CUDA
+  "use_amp": true,  // Automatic Mixed Precision switch
+
+  "backbone_params": {
+    "name": "unet",
+    "input_features": 3,
+    "features": 16
+  },
+
+  "compute_seg": true,
+  "compute_crossfield": true,
+
+  "seg_params": {
+    "compute_interior": true,
+    "compute_edge": true,
+    "compute_vertex": false
+  },
+
+  "loss_params": {
+    "multiloss": {
+      "normalization_params": {
+        "min_samples": 10,  // Per GPU
+        "max_samples": 1000  // Per GPU
+      },
+      "coefs": {
+        "seg_interior": 1,
+        "seg_edge": 1,
+        "seg_vertex": 0,
+        "crossfield_align": 1,
+        "crossfield_align90": 0.4,
+        "crossfield_smooth": 0.4,
+        "seg_interior_crossfield": 0.4,
+        "seg_edge_crossfield": 0.4,
+        "seg_edge_interior": 0.4
+      }
+    },
+    "seg_loss_params": {  // https://github.com/neptune-ai/open-solution-mapping-challenge/blob/master/neptune.yaml
+      "bce_coef": 1.0,
+      "dice_coef": 0.2,
+      "w0": 50,  // From original U-Net paper: distance weight to increase loss between objects
+      "sigma": 10  // From original U-Net paper: distance weight to increase loss between objects
+    }
+  },
+
+  "batch_size": 32,  // Batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  "base_lr": 1e-4,  // Will be multiplied by the effective_batch_size=world_size*batch_size.
+  "max_lr": 1e-2,  // Maximum learning rate
+  "warmup_epochs": 1,  // Number of epochs for warmup (learning rate starts at lr*warmup_factor and gradually increases to lr)
+  "warmup_factor": 1e-3,
+  "weight_decay": 0,
+  "dropout_keep_prob": 1.0,  // Not used for now
+  "max_epoch": 25,
+  "log_steps": 50,
+  "checkpoint_epoch": 1,
+  "checkpoints_to_keep": 10,  // outputs
+  "logs_dirname": "logs",
+  "save_input_output": false,
+  "log_input_output": false,
+  "checkpoints_dirname": "checkpoints",
+  "eval_dirname": "eval"
+}

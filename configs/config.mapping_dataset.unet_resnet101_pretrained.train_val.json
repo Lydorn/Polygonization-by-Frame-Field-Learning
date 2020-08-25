@@ -1,0 +1,19 @@
+{
+  "defaults_filepath": "configs/config.defaults.mapping_dataset.json",
+
+  "run_name": "mapping_dataset.unet_resnet101_pretrained.train_val",
+  "fold": ["train", "val"],
+
+
+
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.unet_resnet101.json",  // Path from the project's root to a JSON with default values for backbone_params
+    "pretrained": true
+  },
+
+  "optim_params": {
+    "batch_size": 10,  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+    "max_epoch": 47  // Highest val was reached at epoch 47
+  }
+}

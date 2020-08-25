@@ -1,0 +1,16 @@
+{
+  "defaults_filepath": "configs/config.defaults.mapping_dataset.json",
+
+  "run_name": "mapping_dataset.unet16",
+
+
+
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.unet16.json"  // Path from the project's root to a JSON with default values for backbone_params
+  },
+
+  "optim_params": {
+    "batch_size": 32  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  }
+}

@@ -1,0 +1,6 @@
+{
+    "name": "deeplab101",
+    "input_features": 3,
+    "features": 128,
+    "pretrained": false
+}

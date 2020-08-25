@@ -1,0 +1,11 @@
+{
+  "defaults_filepath": "configs/config.defaults.json",
+
+  "dataset_params": {
+    "defaults_filepath": "configs/dataset_params.mapping_dataset.json"  // Path from the project's root to a JSON with default values for dataset_params
+  },
+
+  "eval_params" : {
+    "defaults_filepath": "configs/eval_params.mapping_dataset.json"  // Path from the project's root to a JSON with default values for eval_params
+  }
+}

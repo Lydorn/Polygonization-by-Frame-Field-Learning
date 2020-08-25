@@ -1,0 +1,26 @@
+{
+  "multiloss": {
+    "normalization_params": {
+      "min_samples": 10,  // Per GPU
+      "max_samples": 1000  // Per GPU
+    },
+    "coefs": {
+        "epoch_thresholds": [0, 5],  // From 0 to 5: gradually go from coefs[0] to coefs[1] for list coefs
+        "seg": 10,
+        "crossfield_align": 1,
+        "crossfield_align90": 0.2,
+        "crossfield_smooth": 0.005,
+        "seg_interior_crossfield": [0.0, 0.2],
+        "seg_edge_crossfield": [0.0, 0.2],
+        "seg_edge_interior": [0.0, 0.2]
+      }
+  },
+  "seg_loss_params": {  // https://github.com/neptune-ai/open-solution-mapping-challenge/blob/master/neptune.yaml
+    "bce_coef": 1.0,
+    "dice_coef": 0.2,
+    "use_dist": true,  // Dist weights as in the original U-Net paper
+    "use_size": true,  // Size weights increasing importance of smaller buildings
+    "w0": 50,  // From original U-Net paper: distance weight to increase loss between objects
+    "sigma": 10  // From original U-Net paper: distance weight to increase loss between objects
+  }
+}

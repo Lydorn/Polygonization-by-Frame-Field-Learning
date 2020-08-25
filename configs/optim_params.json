@@ -1,0 +1,15 @@
+{
+  "optimizer": "Adam",
+  "batch_size": 8,  // Batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  "base_lr": 1e-3,  // Will be multiplied by the effective_batch_size=world_size*batch_size.
+  "max_lr": 1e-1,  // Maximum resulting learning rate
+  "gamma": 0.95,  // Gamma of exponential learning rate scheduler
+  "weight_decay": 0,  // Not used
+  "dropout_keep_prob": 1.0,  // Not used
+  "max_epoch": 1000,
+  "log_steps": 200,
+  "checkpoint_epoch": 1,
+  "checkpoints_to_keep": 10,  // outputs
+  "logs_dirname": "logs",
+  "checkpoints_dirname": "checkpoints"
+}

@@ -1,0 +1,12 @@
+{
+  "root_dirname": "AerialImageDataset",
+  "gt_source": "disk",  // Can be "disk" or "osm". "osm" will download annotations from OSM
+  "gt_type": "polygon",  // If gt_source=="disk", reads polygon data from gt_dirname
+  "gt_dirname": "aligned_gt_polygons_2",  // If null, will be replaced by default dirname depending on gt_type
+  "mask_only": false,  // This is the default value to not use this option
+  "small": false,
+  "data_patch_size": 725,
+  "input_patch_size": 512,
+
+  "train_fraction": 0.75  // Remaining is validation
+}

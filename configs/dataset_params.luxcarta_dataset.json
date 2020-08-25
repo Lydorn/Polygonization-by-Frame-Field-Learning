@@ -1,0 +1,8 @@
+{
+  "root_dirname": "luxcarta_precise_buildings",
+  "data_patch_size": 725,
+  "input_patch_size": 512,
+
+  "seed": 0,  // Change this to change the random splitting of data in train/val/test
+  "train_fraction": 0.9  // Remaining is validation
+}

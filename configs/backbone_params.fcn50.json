@@ -1,0 +1,6 @@
+{
+    "name": "fcn50",
+    "input_features": 3,
+    "features": 256,
+    "pretrained": false
+}

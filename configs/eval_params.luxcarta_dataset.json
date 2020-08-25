@@ -1,0 +1,15 @@
+{
+  "defaults_filepath": "configs/eval_params.defaults.json",
+
+  "patch_size": 1024,
+
+  "save_individual_outputs": {
+    "seg": true,
+    "poly_shapefile": true,
+    "poly_viz": true
+  },
+
+  "save_aggregated_outputs": {
+    "stats": true
+  }
+}

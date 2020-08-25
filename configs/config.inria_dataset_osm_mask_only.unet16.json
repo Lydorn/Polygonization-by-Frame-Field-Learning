@@ -1,0 +1,17 @@
+{
+  "defaults_filepath": "configs/config.defaults.inria_dataset_osm_mask_only.json",
+
+  "run_name": "inria_dataset_osm_mask_only.unet16",
+
+
+
+
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.unet16.json"  // Path from the project's root to a JSON with default values for backbone_params
+  },
+
+  "optim_params": {
+    "batch_size": 16  // Batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  }
+}

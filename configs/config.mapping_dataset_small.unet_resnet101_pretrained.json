@@ -1,0 +1,31 @@
+{
+  "defaults_filepath": "configs/config.defaults.mapping_dataset.json",
+
+  "run_name": "mapping_dataset_small.unet_resnet101_pretrained",
+
+
+
+
+  "dataset_params": {
+    "small": true
+  },
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.unet_resnet101.json",  // Path from the project's root to a JSON with default values for backbone_params
+    "pretrained": true
+  },
+
+  "optim_params": {
+    "batch_size": 8,  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+    "gamma": 1.0,
+    "log_steps": 10
+  },
+
+  "eval_params" : {
+    "defaults_filepath": "configs/eval_params.mapping_dataset.json"  // Path from the project's root to a JSON with default values for eval_params
+  },
+
+  "data_aug_params": {
+    "enable": false
+  }
+}

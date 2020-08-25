@@ -1,0 +1,26 @@
+{
+  "defaults_filepath": "configs/config.defaults.mapping_dataset.json",
+
+  "run_name": "mapping_dataset.unet16.coupling_losses_off",
+
+
+
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.unet16.json"  // Path from the project's root to a JSON with default values for backbone_params
+  },
+
+  "loss_params": {
+    "multiloss": {
+      "coefs": {
+        "seg_interior_crossfield": 0.0,
+        "seg_edge_crossfield": 0.0,
+        "seg_edge_interior": 0.0
+      }
+    }
+  },
+
+  "optim_params": {
+    "batch_size": 32  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  }
+}

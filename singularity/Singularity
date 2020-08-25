@@ -1,0 +1,4 @@
+Bootstrap: docker
+Registry: http://localhost:5000
+Namespace:
+From: frame-field-learning:1.2

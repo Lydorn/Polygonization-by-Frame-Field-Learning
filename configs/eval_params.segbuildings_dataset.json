@@ -1,0 +1,23 @@
+{
+  "patch_size": null,
+  "patch_overlap": 200,
+
+  "seg_threshold": 0.5,
+
+  "save_outputs": {
+    "image": false,
+    "stats": true,
+    "seg_gt": false,
+    "seg": false,
+    "seg_mask": false,
+    "seg_opencities_mask": true,
+    "seg_luxcarta": false,
+    "seg_coco": false,
+    "crossfield": false,
+    "uv_angles": false,
+    "poly_shapefile": false,
+    "poly_geojson": false,
+    "poly_viz": false,
+    "poly_coco": false
+  }
+}

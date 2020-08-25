@@ -1,0 +1,94 @@
+***
+CONTRAT DE LICENCE DE LOGICIEL
+
+Logiciel MAPALIGNMENT ©Inria 2018, tout droit réservé, ci-après dénommé "le Logiciel".
+
+Le Logiciel a été conçu et réalisé par des chercheurs de l’équipe-projet TITANE d’Inria (Institut National de Recherche en Informatique et Automatique).
+
+Inria, Domaine de Voluceau, Rocquencourt - BP 105
+78153 Le Chesnay Cedex, France
+
+Inria détient tous les droits de propriété sur le Logiciel.
+
+Le Logiciel a été déposé auprès de l'Agence pour la Protection des Programmes (APP) sous le numéro <A COMPLETER>.
+
+Le Logiciel est en cours de développement et Inria souhaite qu'il soit utilisé par la communauté scientifique de façon à le tester et l'évaluer, et afin qu’Inria puisse le cas échéant le faire évoluer.
+
+A cette fin, Inria a décidé de distribuer le Logiciel.
+
+Inria concède à l'utilisateur académique, gratuitement, sans droit de sous-licence, pour une période de un (1) an à compter du téléchargement du code source, le droit non-exclusif d'utiliser le Logiciel à fins de recherche. Toute autre utilisation sans l’accord préalable d’Inria est exclue.
+
+L’utilisateur académique reconnaît expressément avoir reçu d’Inria toutes les informations lui permettant d’apprécier l’adéquation du Logiciel à ses besoins et de prendre toutes les précautions utiles pour sa mise en œuvre et son utilisation.
+
+Le Logiciel est distribué sous forme d'un fichier source.
+
+Si le Logiciel est utilisé pour la publication de résultats, l’utilisateur devra citer le Logiciel de la façon suivante :
+
+@misc{girard2020polygonal,
+    title={Polygonal Building Segmentation by Frame Field Learning},
+    author={Nicolas Girard and Dmitriy Smirnov and Justin Solomon and Yuliya Tarabalka},
+    year={2020},
+    eprint={2004.14875},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+
+
+Tout utilisateur du Logiciel pourra communiquer ses remarques d'utilisation du Logiciel aux développeurs de MAPALIGNMENT : nicolas.girard@inria.fr
+
+
+L'UTILISATEUR NE PEUT FAIRE NI UTILISATION NI EXPLOITATION NI DISTRIBUTION COMMERCIALE DU LOGICIEL SANS L'ACCORD EXPRÈS PRÉALABLE d’INRIA (stip-sam@inria.fr).
+TOUT ACTE CONTRAIRE CONSTITUERAIT UNE CONTREFAÇON.
+
+LE LOGICIEL EST FOURNI "TEL QU'EN L'ÉTAT" SANS AUCUNE GARANTIE DE QUELQUE NATURE, IMPLICITE OU EXPLICITE, QUANT À SON UTILISATION COMMERCIALE, PROFESSIONNELLE, LÉGALE OU NON, OU AUTRE, SA COMMERCIALISATION OU SON ADAPTATION.
+
+SAUF LORSQU'EXPLICITEMENT PRÉVU PAR LA LOI, INRIA NE POURRA ÊTRE TENU POUR RESPONSABLE DE TOUT DOMMAGE OU PRÉJUDICE DIRECT,INDIRECT, (PERTES FINANCIÈRES DUES AU MANQUE À GAGNER, À L'INTERRUPTION D'ACTIVITÉS OU À LA PERTE DE DONNÉES, ETC...) DÉCOULANT DE L'UTILISATION DE TOUT OU PARTIE DU LOGICIEL OU DE L'IMPOSSIBILITÉ D'UTILISER CELUI-CI.
+ 
+***
+
+SOFTWARE LICENSE AGREEMENT
+
+
+Software MAPALIGNMENT ©Inria – 2018, all rights reserved, hereinafter "the Software".
+
+This software has been developed by researchers of TITANE project team of Inria (Institut National de Recherche en Informatique et Automatique).
+
+Inria, Domaine de Voluceau, Rocquencourt - BP 105
+78153 Le Chesnay Cedex, FRANCE
+
+
+Inria holds all the ownership rights on the Software.
+
+The Software has been registered with the Agence pour la Protection des Programmes (APP) under <TO COMPLETE>.
+
+The Software is still being currently developed. It is the Inria’s aim for the Software to be used by the scientific community so as to test it and, evaluate it so that Inria may improve it.
+
+For these reasons Inria has decided to distribute the Software.
+
+Inria grants to the academic user, a free of charge, without right to sublicense non-exclusive right to use the Software for research purposes for a period of one (1) year from the date of the download of the source code. Any other use without of prior consent of Inria is prohibited.
+
+The academic user explicitly acknowledges having received from Inria all information allowing him to appreciate the adequacy between of the Software and his needs and to undertake all necessary precautions for his execution and use.
+
+The Software is provided only as a source.
+
+In case of using the Software for a publication or other results obtained through the use of the Software, user should cite the Software as follows :
+
+@misc{girard2020polygonal,
+    title={Polygonal Building Segmentation by Frame Field Learning},
+    author={Nicolas Girard and Dmitriy Smirnov and Justin Solomon and Yuliya Tarabalka},
+    year={2020},
+    eprint={2004.14875},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+
+
+Every user of the Software could communicate to the developers of MAPALIGNMENT [nicolas.girard@inria.fr] his or her remarks as to the use of the Software.
+
+THE USER CANNOT USE, EXPLOIT OR COMMERCIALY DISTRIBUTE THE SOFTWARE WITHOUT PRIOR AND EXPLICIT CONSENT OF INRIA (stip-sam@inria.fr). ANY SUCH ACTION WILL CONSTITUTE A FORGERY.
+
+THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTIES OF ANY NATURE AND ANY EXPRESS OR IMPLIED WARRANTIES,WITH REGARDS TO COMMERCIAL USE, PROFESSIONNAL USE, LEGAL OR NOT, OR OTHER, OR COMMERCIALISATION OR ADAPTATION.
+
+UNLESS EXPLICITLY PROVIDED BY LAW, IN NO EVENT, SHALL INRIA OR THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, LOSS OF USE, DATA, OR PROFITS OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+

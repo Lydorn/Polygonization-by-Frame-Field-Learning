@@ -1,0 +1,9 @@
+{
+    "name": "unet_resnet",
+    "encoder_depth": 101,  // 34, 101 and 152 are possible
+    "input_features": 3,
+    "num_filters": 32,  // Default: 32
+    "pretrained": false,
+    "dropout_2d": 0.2,  // Default: 0.2
+    "is_deconv": false // Default: false
+}

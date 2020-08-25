@@ -1,0 +1,15 @@
+{
+  "defaults_filepath": "configs/config.defaults.mapping_dataset.json",
+
+  "run_name": "mapping_dataset.deeplab101.train_val",
+  "fold": ["train", "val"],
+
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.deeplab101.json"  // Path from the project's root to a JSON with default values for backbone_params
+  },
+
+  "optim_params": {
+    "batch_size": 8  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  }
+}

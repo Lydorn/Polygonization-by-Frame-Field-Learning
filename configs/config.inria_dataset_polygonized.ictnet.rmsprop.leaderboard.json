@@ -1,0 +1,39 @@
+{
+  "defaults_filepath": "configs/config.defaults.inria_dataset_polygonized.json",
+
+  "run_name": "inria_dataset_polygonized.ictnet.rmsprop.leaderboard",
+
+
+
+
+
+
+
+  "seg_params": {
+    "compute_interior": true,
+    "compute_edge": false,
+    "compute_vertex": false
+  },
+
+
+
+
+
+  "backbone_params": {
+    "defaults_filepath": "configs/backbone_params.ictnet.json"  // Path from the project's root to a JSON with default values for backbone_params
+  },
+
+  "loss_params": {
+    "seg_loss_params": {
+      "bce_coef": 1.0,
+      "dice_coef": 0.2,
+      "use_dist": true,  // Dist weights as in the original U-Net paper
+      "use_size": false  // Size weights increasing importance of smaller buildings
+    }
+  },
+
+  "optim_params": {
+    "optimizer": "RMSProp",
+    "batch_size": 2  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  }
+}

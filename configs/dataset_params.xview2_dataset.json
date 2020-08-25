@@ -1,0 +1,14 @@
+{
+  "root_dirname": "xview2_xbd_dataset",
+  "pre_process": true,
+  "gt_source": "disk",
+  "gt_type": "geojson",
+  "gt_dirname": "gt_polygonized",  // gt_polygonized are annotations that are the polygonized version of the original gt masks on inria dataset
+  "mask_only": false,  // This is the default value to not use this option
+  "small": false,
+  "data_patch_size": 725,
+  "input_patch_size": 512,
+
+  "seed": 0,  // Change this to change the random splitting of data in train/val/test
+  "train_fraction": 0.75  // Remaining is validation
+}
