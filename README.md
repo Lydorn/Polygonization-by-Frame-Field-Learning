@@ -4,7 +4,7 @@ All the code is there. A more detailed README is coming soon...
 
 # Polygonal Building Segmentation by Frame Field Learning
 
-This repo will contain the official code for the paper:
+This repo contains the official code for the paper:
 
 **Regularized Building Segmentation by Frame Field Learning**\
 [Nicolas Girard](https://www-sop.inria.fr/members/Nicolas.Girard/),
