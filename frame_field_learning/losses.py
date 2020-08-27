@@ -8,6 +8,7 @@ import torch.distributed
 from torch.nn import functional as F
 
 from . import measures
+from . import frame_field_utils
 
 import torch_lydorn.kornia
 
@@ -354,7 +355,7 @@ class CrossfieldAlignLoss(Loss):
         assert 2 <= gt_polygons_image.shape[1], \
             "gt_polygons_image should have at least 2 channels for interior and edges"
         gt_edges = gt_polygons_image[:, 1, ...]
-        align_loss = measures.crossfield_align_error(c0, c2, z, complex_dim=1)
+        align_loss = frame_field_utils.framefield_align_error(c0, c2, z, complex_dim=1)
         avg_align_loss = torch.mean(align_loss * gt_edges)
 
         self.extra_info["gt_field"] = gt_batch["gt_field"]
@@ -377,7 +378,7 @@ class CrossfieldAlign90Loss(Loss):
         gt_vertices = gt_polygons_image[:, 2, ...]
         gt_edges_minus_vertices = gt_edges - gt_vertices
         gt_edges_minus_vertices = gt_edges_minus_vertices.clamp(0, 1)
-        align90_loss = measures.crossfield_align_error(c0, c2, z_90deg, complex_dim=1)
+        align90_loss = frame_field_utils.framefield_align_error(c0, c2, z_90deg, complex_dim=1)
         avg_align90_loss = torch.mean(align90_loss * gt_edges_minus_vertices)
         return avg_align90_loss
 
@@ -385,7 +386,7 @@ class CrossfieldAlign90Loss(Loss):
 class CrossfieldSmoothLoss(Loss):
     def __init__(self, name):
         super(CrossfieldSmoothLoss, self).__init__(name)
-        self.laplacian_penalty = measures.LaplacianPenalty(channels=4)
+        self.laplacian_penalty = frame_field_utils.LaplacianPenalty(channels=4)
 
     def compute(self, pred_batch, gt_batch):
         c0c2 = pred_batch["crossfield"]
@@ -408,7 +409,7 @@ class SegCrossfieldLoss(Loss):
         c2 = pred_batch["crossfield"][:, 2:]
         seg_slice_grads_normed = pred_batch["seg_grads_normed"][:, self.pred_channel, ...]
         seg_slice_grad_norm = pred_batch["seg_grad_norm"][:, self.pred_channel, ...]
-        align_loss = measures.crossfield_align_error(c0, c2, seg_slice_grads_normed, complex_dim=1)
+        align_loss = frame_field_utils.framefield_align_error(c0, c2, seg_slice_grads_normed, complex_dim=1)
         # normed_align_loss = align_loss * seg_slice_grad_norm
         # avg_align_loss = torch.sum(normed_align_loss) / (torch.sum(seg_slice_grad_norm) + 1e-6)
         avg_align_loss = torch.mean(align_loss * seg_slice_grad_norm.detach())

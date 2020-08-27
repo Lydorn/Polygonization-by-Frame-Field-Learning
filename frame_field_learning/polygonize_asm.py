@@ -21,7 +21,7 @@ from functools import partial
 import torch
 import torch_scatter
 
-from frame_field_learning import polygonize_utils, plot_utils, measures, frame_field_utils
+from frame_field_learning import polygonize_utils, plot_utils, frame_field_utils
 
 from torch_lydorn.torch.nn.functionnal import bilinear_interpolate
 from torch_lydorn.torchvision.transforms import Paths, Skeleton, TensorSkeleton, skeletons_to_tensorskeleton, tensorskeleton_to_skeletons
@@ -184,7 +184,7 @@ class AlignLoss:
         edge_mask[norms < 0.1] = 0  # Zero out very small edges
         normed_tangents = tangents / (norms[:, None] + 1e-6)
 
-        align_loss = measures.crossfield_align_error(midpoints_c0, midpoints_c2, normed_tangents, complex_dim=1)
+        align_loss = frame_field_utils.framefield_align_error(midpoints_c0, midpoints_c2, normed_tangents, complex_dim=1)
         align_loss = align_loss * edge_mask
         total_align_loss = torch.sum(align_loss)
 
@@ -490,7 +490,7 @@ def post_process(polylines, np_indicator, np_crossfield, config):
     # Simplify contours a little to avoid some close-together corner-detection:
     # tic = time.time()
     u, v = math_utils.compute_crossfield_uv(np_crossfield)  # u, v are complex arrays
-    corner_masks = polygonize_utils.detect_corners(polylines, u, v)
+    corner_masks = frame_field_utils.detect_corners(polylines, u, v)
     polylines = polygonize_utils.split_polylines_corner(polylines, corner_masks)
     # toc = time.time()
     # print(f"Corner detect: {toc - tic}s")

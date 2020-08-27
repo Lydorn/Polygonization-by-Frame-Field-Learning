@@ -44,52 +44,6 @@ def compute_init_contours_batch(np_indicator_batch, level, pool=None):
     return init_contours_batch
 
 
-def detect_corners(polylines, u, v):
-    def compute_direction_score(ij, edges, field_dir):
-        values = field_dir[ij[:, 0], ij[:, 1]]
-        edge_dot_dir = edges[:, 0] * values.real + edges[:, 1] * values.imag
-        abs_edge_dot_dir = np.abs(edge_dot_dir)
-        return abs_edge_dot_dir
-
-    def compute_is_corner(points, left_edges, right_edges):
-        if points.shape[0] == 0:
-            return np.empty(0, dtype=np.bool)
-
-        coords = np.round(points).astype(np.int)
-        coords[:, 0] = np.clip(coords[:, 0], 0, u.shape[0] - 1)
-        coords[:, 1] = np.clip(coords[:, 1], 0, u.shape[1] - 1)
-        left_u_score = compute_direction_score(coords, left_edges, u)
-        left_v_score = compute_direction_score(coords, left_edges, v)
-        right_u_score = compute_direction_score(coords, right_edges, u)
-        right_v_score = compute_direction_score(coords, right_edges, v)
-
-        left_is_u_aligned = left_v_score < left_u_score
-        right_is_u_aligned = right_v_score < right_u_score
-
-        return np.logical_xor(left_is_u_aligned, right_is_u_aligned)
-
-    corner_masks = []
-    for polyline in polylines:
-        corner_mask = np.zeros(polyline.shape[0], dtype=np.bool)
-        if np.max(np.abs(polyline[0] - polyline[-1])) < 1e-6:
-            # Closed polyline
-            left_edges = np.concatenate([polyline[-2:-1] - polyline[-1:], polyline[:-2] - polyline[1:-1]], axis=0)
-            right_edges = polyline[1:] - polyline[:-1]
-            corner_mask[:-1] = compute_is_corner(polyline[:-1, :], left_edges, right_edges)
-            # left_edges and right_edges do not include the redundant last vertex, thus we have to do this assignment:
-            corner_mask[-1] = corner_mask[0]
-        else:
-            # Open polyline
-            corner_mask[0] = True
-            corner_mask[-1] = True
-            left_edges = polyline[:-2] - polyline[1:-1]
-            right_edges = polyline[2:] - polyline[1:-1]
-            corner_mask[1:-1] = compute_is_corner(polyline[1:-1, :], left_edges, right_edges)
-        corner_masks.append(corner_mask)
-
-    return corner_masks
-
-
 def split_polylines_corner(polylines, corner_masks):
     new_polylines = []
     for polyline, corner_mask in zip(polylines, corner_masks):

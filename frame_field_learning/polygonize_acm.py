@@ -17,15 +17,15 @@ from functools import partial
 import torch
 
 from frame_field_learning import polygonize_utils
-from frame_field_learning import polygonize_inner_polylines
+from frame_field_learning import frame_field_utils
 
-from torch_lydorn.torch.utils.complex import complex_mul, complex_abs_squared
 from torch_lydorn.torch.nn.functionnal import bilinear_interpolate
 from torch_lydorn.torchvision.transforms import polygons_to_tensorpoly, tensorpoly_pad
 
 from lydorn_utils import math_utils
 from lydorn_utils import python_utils
 from lydorn_utils import print_utils
+
 
 DEBUG = False
 
@@ -62,19 +62,6 @@ def get_args():
 
     args = argparser.parse_args()
     return args
-
-
-def crossfield_align_error(c0, c2, z, complex_dim=-1):
-    assert c0.shape == c2.shape == z.shape, \
-        "All inputs should have the same shape. Currently c0: {}, c2: {}, z: {}".format(c0.shape, c2.shape, z.shape)
-    assert c0.shape[complex_dim] == c2.shape[complex_dim] == z.shape[complex_dim] == 2, \
-        "All inputs should have their complex_dim size equal 2 (real and imag parts)"
-    z_squared = complex_mul(z, z, complex_dim=complex_dim)
-    z_pow_4 = complex_mul(z_squared, z_squared, complex_dim=complex_dim)
-    # All tensors are assimilated as being complex so adding that way works (adding a scalar wouldn't work):
-    f_z = z_pow_4 + complex_mul(c2, z_squared, complex_dim=complex_dim) + c0
-    loss = complex_abs_squared(f_z, complex_dim)  # Square of the absolute value of f_z
-    return loss
 
 
 class PolygonAlignLoss:
@@ -120,7 +107,7 @@ class PolygonAlignLoss:
         z = edges / (norms[:, None] + 1e-3)
 
         # Align to crossfield
-        align_loss = crossfield_align_error(midpoints_c0, midpoints_c2, z, complex_dim=1)
+        align_loss = frame_field_utils.framefield_align_error(midpoints_c0, midpoints_c2, z, complex_dim=1)
         align_loss = align_loss * edge_mask
         total_align_loss = torch.sum(align_loss)
 
@@ -276,7 +263,7 @@ def shapely_postprocess(contours, u, v, np_indicator, tolerance, config):
         # Simplify contours a little to avoid some close-together corner-detection:
         # TODO: handle close-together corners better
         contours = [skimage.measure.approximate_polygon(contour, tolerance=min(1, tolerance)) for contour in contours]
-        corner_masks = polygonize_utils.detect_corners(contours, u, v)
+        corner_masks = frame_field_utils.detect_corners(contours, u, v)
         contours = polygonize_utils.split_polylines_corner(contours, corner_masks)
 
         # Convert to Shapely:
@@ -327,12 +314,6 @@ def shapely_postprocess(contours, u, v, np_indicator, tolerance, config):
 
 def post_process(contours, np_seg, np_crossfield, config):
     u, v = math_utils.compute_crossfield_uv(np_crossfield)  # u, v are complex arrays
-    if "inner_polylines_params" in config and config["inner_polylines_params"]["enable"]:
-        edge_prob = np_seg[:, :, 1]
-        interior_prob = np.clip(np.sum(np_seg, axis=-1), 0, 1)
-        inner_polyline_list = polygonize_inner_polylines.get_inner_polylines(contours, edge_prob, interior_prob, u, v,
-                                                                             config["inner_polylines_params"])
-        contours.extend(inner_polyline_list)
 
     np_indicator = np_seg[:, :, 0]
     polygons, probs = shapely_postprocess(contours, u, v, np_indicator, config["tolerance"], config)
