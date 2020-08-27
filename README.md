@@ -4,6 +4,9 @@ All the code is there. More detailed READMEs are coming soon...
 
 # Polygonal Building Segmentation by Frame Field Learning
 
+We add a frame field output to an image segmentation neural network to improve segmentation quality 
+and provide structural information for the subsequent polygonization step.
+
 <p align="center">
     <img src="images/frame_field_sample.png" width="512" />
     <br>
@@ -22,7 +25,7 @@ All the code is there. More detailed READMEs are coming soon...
     <br>
     <img src="images/schematic_polygonization.png" width="768" />
     <br>
-    Figure 3: Given classification maps and a frame field as input, we optimize the contour to
+    Figure 3: Given classification maps and a frame field as input, we optimize skeleton polylines to
     align to the frame field using an Active Skeleton Model (ASM) and detect corners using
     the frame field, simplifying non-corner vertices.
 </p>
@@ -45,15 +48,6 @@ Whose short version is published as:
 [Justin Solomon](https://people.csail.mit.edu/jsolomon/),
 [Yuliya Tarabalka](https://www-sop.inria.fr/members/Yuliya.Tarabalka/)\
 IGARSS 2020
-
-# Introduction
-
-We add a frame field output to an image segmentation neural network to improve segmentation quality 
-and provide structural information for a subsequent polygonization step. 
-A frame field encodes two directions up to sign at every point of an image. 
-To improve segmentation, we train a network to align an output frame field to the tangents of ground truth contours. 
-In addition to increasing performance by leveraging the multi-task learning effect, 
-our method produces more regular segmentations and is more robust due to the additional learning signal.
 
 # Setup
 
