@@ -5,6 +5,12 @@ All the code is there. More detailed READMEs are coming soon...
 # Polygonal Building Segmentation by Frame Field Learning
 
 <p align="center">
+    <img src="images/frame_field_sample.png" width="500" />
+</p>
+Close-up of our additional frame field output on a test image.
+
+<br>
+<p align="center">
     <img src="images/model_training.png" width="750" />
 </p>
 Given an overhead image, the model outputs an edge mask, an interior mask,
@@ -16,16 +22,9 @@ frame field and consistency between the outputs.
 <p align="center">
     <img src="images/schematic_polygonization.png" width="750" />
 </p>
-Overview of our post-processing polygonization algorithm. Given an interior
-classification map and frame field as input, we optimize the contour to
+Given classification maps and a frame field as input, we optimize the contour to
 align to the frame field using an Active Skeleton Model (ASM) and detect corners using
 the frame field, simplifying non-corner vertices.
-
-<br>
-<p align="center">
-    <img src="images/frame_field_sample.png" width="500" />
-</p>
-Close-up of our frame field output on a test image.
 
 This repository contains the official code for the paper:
 
