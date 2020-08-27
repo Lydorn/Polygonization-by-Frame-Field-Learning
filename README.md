@@ -6,7 +6,7 @@ All the code is there. More detailed READMEs are coming soon...
 
 <p align="center">
     <img src="images/model_training.png" width="750" />
-</p>
+</p>\
 Given an overhead image, the model outputs an edge mask, an interior mask,
 and a frame field for buildings. The total loss includes terms that align the masks and
 frame field to ground truth data as well as regularizers to enforce smoothness of the
@@ -14,7 +14,7 @@ frame field and consistency between the outputs.
 
 <p align="center">
     <img src="images/schematic_polygonization.png" width="750" />
-</p>
+</p>\
 Overview of our post-processing polygonization algorithm. Given an interior
 classification map and frame field as input, we optimize the contour to
 align to the frame field using an Active Skeleton Model (ASM) and detect corners using
@@ -22,7 +22,7 @@ the frame field, simplifying non-corner vertices.
 
 <p align="center">
     <img src="images/frame_field_sample.png" width="750" />
-</p>
+</p>\
 Close-up of our frame field output on a test image.
 
 This repository contains the official code for the paper:
