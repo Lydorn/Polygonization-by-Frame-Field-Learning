@@ -6,25 +6,17 @@ All the code is there. More detailed READMEs are coming soon...
 
 <p align="center">
     <img src="images/frame_field_sample.png" width="500" />
-</p>
-Close-up of our additional frame field output on a test image.
-
-<br>
-<p align="center">
+    Close-up of our additional frame field output on a test image.
     <img src="images/model_training.png" width="750" />
-</p>
-Given an overhead image, the model outputs an edge mask, an interior mask,
-and a frame field for buildings. The total loss includes terms that align the masks and
-frame field to ground truth data as well as regularizers to enforce smoothness of the
-frame field and consistency between the outputs.
-
-<br>
-<p align="center">
+    Given an overhead image, the model outputs an edge mask, an interior mask,
+    and a frame field for buildings. The total loss includes terms that align the masks and
+    frame field to ground truth data as well as regularizers to enforce smoothness of the
+    frame field and consistency between the outputs.
     <img src="images/schematic_polygonization.png" width="750" />
+    Given classification maps and a frame field as input, we optimize the contour to
+    align to the frame field using an Active Skeleton Model (ASM) and detect corners using
+    the frame field, simplifying non-corner vertices.
 </p>
-Given classification maps and a frame field as input, we optimize the contour to
-align to the frame field using an Active Skeleton Model (ASM) and detect corners using
-the frame field, simplifying non-corner vertices.
 
 This repository contains the official code for the paper:
 
