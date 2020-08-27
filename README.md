@@ -1,18 +1,43 @@
 ### :warning: Under construction
 
-All the code is there. A more detailed README is coming soon...
+All the code is there. More detailed READMEs are coming soon...
 
 # Polygonal Building Segmentation by Frame Field Learning
 
-This repo contains the official code for the paper:
+<p align="center">
+    <img src="images/model_training.png" width="750" />
+    Given an overhead image, the model outputs an edge mask, an interior mask,
+and a frame field for buildings. The total loss includes terms that align the masks and
+frame field to ground truth data as well as regularizers to enforce smoothness of the
+frame field and consistency between the outputs.
+</p>
+
+<p align="center">
+    <img src="images/schematic_polygonization.png" width="750" />
+    Overview of our post-processing polygonization algorithm. Given an interior
+classification map and frame field as input, we optimize the contour to
+align to the frame field using an Active Skeleton Model (ASM) and detect corners using
+the frame field, simplifying non-corner vertices.
+</p>
+
+This repository contains the official code for the paper:
+
+**Polygonal Building Segmentation by Frame Field Learning**\
+[Nicolas Girard](https://www-sop.inria.fr/members/Nicolas.Girard/),
+[Dmitriy Smirnov](https://people.csail.mit.edu/smirnov/),
+[Justin Solomon](https://people.csail.mit.edu/jsolomon/),
+[Yuliya Tarabalka](https://www-sop.inria.fr/members/Yuliya.Tarabalka/)\
+Pre-print\
+**\[[paper](https://arxiv.org/pdf/2004.14875.pdf), [video](https://www.youtube.com/watch?v=XdQMD3HTYCU&t=5s)\]**
+
+Whose short version is published as:
 
 **Regularized Building Segmentation by Frame Field Learning**\
 [Nicolas Girard](https://www-sop.inria.fr/members/Nicolas.Girard/),
 [Dmitriy Smirnov](https://people.csail.mit.edu/smirnov/),
 [Justin Solomon](https://people.csail.mit.edu/jsolomon/),
 [Yuliya Tarabalka](https://www-sop.inria.fr/members/Yuliya.Tarabalka/)\
-IGARSS 2020\
-**\[[paper](https://arxiv.org/pdf/2004.14875.pdf) (extended version)\]**
+IGARSS 2020
 
 # Introduction
 
@@ -23,21 +48,87 @@ To improve segmentation, we train a network to align an output frame field to th
 In addition to increasing performance by leveraging the multi-task learning effect, 
 our method produces more regular segmentations and is more robust due to the additional learning signal.
 
-# Run
+# Setup
 
-Execute [main.py] script to train a model, test a model or use a model on your own image.
+## Git submodules
+
+This project uses various git submodules that should be cloned too.
+
+To clone a repository including its submodules execute:
+```
+git clone --recursive --jobs 8 <URL to Git repo>
+```
+
+If you already have cloned the repository and now want to load it’s submodules execute:
+```
+git submodule update --init --recursive --jobs 8
+```
+or:
+```
+git submodule update --recursive
+```
+
+For more about explanations about using submodules and git, see [SUBMODULES.md](SUBMODULES.md).
+
+## Docker
+
+The easiest way to setup environment is to use the Docker image provided in the [docker](docker) (see README inside the folder).
+
+Once the docker container is built and launched, execute the [setup.sh](setup.sh) script inside to install required packages.
+
+The environment in the container is now ready for use.
+
+# Data
+
+Several datasets are used in this work. 
+We typically put all datasets in a "data" folder which we link to the "/data" folder in the container (with the ```-v``` argument when running the container).
+Each dataset has it's own sub-folder, usually named with a short version of that dataset's name. 
+Each dataset sub-folder should have a "raw" folder inside containing all the original folders and files fo the datset.
+When pre-processing data, "processed" folders will be created alongside the "raw" folder.
+
+For example, the CrowdAI Mapping Challenge dataset should have the following file structure inside the container:
+
+```
+/data 
+`-- mapping_challenge_dataset
+     |-- raw
+         |-- train
+         |   |-- images
+         |   |-- annotation.json
+         |   `-- annotation-small.json
+         `-- val
+              `-- ...
+```
+
+If however you would like to use a different folder for the datasets (for example while not using Docker), 
+you can change the path to datasets in config files.
+You can modify the "data_dir_candidates" list in the config to only include your path. 
+The training script checks this list of paths one at a time and picks the first one that exists. 
+It then appends the "data_root_partial_dirpath" directory to get to the dataset.
+
+# Running the main.py script
+
+Execute [main.py](main.py) script to train a model, test a model or use a model on your own image.
 See the help of the main script with:
 
-```python main.py -help```
+```python main.py --help```
+
+The script can be launched on multiple GPUs for multi-GPU training and evaluation.
+Simply set the ```--gpus``` argument to the number of gpus you want to use. 
+However, for the first launch of the script on a particular dataset (when it will pre-process the data), 
+it is best to leave it at 1 as I did not implement multi-GPU synchronization when pre-processing datasets.
 
 # Launch inference on one image
 
 Make sure the run folder has the correct structure:
 
 ```
-frame-field-learning
-|-- runs
-|   |-- <run_name> | yyyy-mm-dd hh:mm:ss
+Polygonization-by-Frame-Field-Learning
+|-- frame-field-learning
+|   |-- runs
+|   |   |-- <run_name> | yyyy-mm-dd hh:mm:ss
+|   |   `-- ...
+|   |-- inference.py
 |   `-- ...
 |-- main.py
 |-- README.md (this file)
@@ -49,79 +140,26 @@ Execute the [main.py] script like so (filling values for arguments run_name and 
 
 The outputs will be saved next to the input image
 
-# Using Docker while developing the packages
+# Cite:
 
-In order to install the packages in develop mode (or editale mode) i.e. ```pip install -e <package_path>``` 
-in the Docker container, execute the setup.sh script inside the Docker container after start-up.
+If you use this code for your own research, please cite
 
-
-# Git submodules
-
-This project uses various git submodules. You have to pull all for the code to work.
-
-See this tutorial on git submodules used with Python modules in dev mode: https://shunsvineyard.info/2019/12/23/using-git-submodule-and-develop-mode-to-manage-python-projects/
-
-Further useful git submodules commands:
-
-Clone a repository including its submodules:
 ```
-git clone --recursive --jobs 8 <URL to Git repo>
-```
+@InProceedings{Girard_2020_IGARSS,
+  title = {{Regularized Building Segmentation by Frame Field Learning}},
+  author = {Girard, Nicolas and Smirnov, Dmitriy and Solomon, Justin and Tarabalka, Yuliya},
+  booktitle = {IEEE International Geoscience and Remote Sensing Symposium (IGARSS)},
+  ADDRESS = {Waikoloa, Hawaii},
+  year = {2020},
+  month = Jul,
+}
 
-If you already have cloned a repository and now want to load it’s submodules:
-```
-git submodule update --init --recursive --jobs 8
-OR
-git submodule update --recursive
-```
-
-Pull everything, including submodules:
-```
-git pull --recurse-submodules
-```
-
-Add a sudmodule:
-```
-git submodule add -b <branch_name> <URL to Git repo>
-git submodule init
-```
-
-Update your submodule --remote fetches new commits in the submodules and updates the working tree to the commit described by the branch:
-```
-git submodule update --remote
-```
-
-The following example shows how to update a submodule to its latest commit in its master branch:
-```
-# update submodule in the master branch
-# skip this if you use --recurse-submodules
-# and have the master branch checked out
-cd [submodule directory]
-git checkout master
-git pull
-
-# commit the change in main repo
-# to use the latest commit in master of the submodule
-cd ..
-git add [submodule directory]
-git commit -m "move submodule to latest commit in master"
-
-# share your changes
-git push
-```
-
-Get the update by pulling in the changes and running the submodules update command:
-```
-# another developer wants to get the changes
-git pull
-
-# this updates the submodule to the latest
-# commit in master as set in the last example
-git submodule update
-```
-
-Remove submodule:
-```
-git rm the_submodule
-rm -rf .git/modules/the_submodule
+@misc{girard2020polygonal,
+    title={Polygonal Building Segmentation by Frame Field Learning},
+    author={Nicolas Girard and Dmitriy Smirnov and Justin Solomon and Yuliya Tarabalka},
+    year={2020},
+    eprint={2004.14875},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
 ```
