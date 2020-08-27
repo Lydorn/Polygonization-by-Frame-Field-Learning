@@ -5,12 +5,12 @@ All the code is there. More detailed READMEs are coming soon...
 # Polygonal Building Segmentation by Frame Field Learning
 
 <p align="center">
-    <img src="images/frame_field_sample.png" width="500" />
+    <img src="images/frame_field_sample.png" width="250" />
     <br>
     Close-up of our additional frame field output on a test image.
     <br>
     <br>
-    <img src="images/model_training.png" width="750" />
+    <img src="images/model_training.png" width="500" />
     <br>
     Given an overhead image, the model outputs an edge mask, an interior mask,
     and a frame field for buildings. The total loss includes terms that align the masks and
@@ -18,7 +18,7 @@ All the code is there. More detailed READMEs are coming soon...
     frame field and consistency between the outputs.
     <br>
     <br>
-    <img src="images/schematic_polygonization.png" width="750" />
+    <img src="images/schematic_polygonization.png" width="500" />
     <br>
     Given classification maps and a frame field as input, we optimize the contour to
     align to the frame field using an Active Skeleton Model (ASM) and detect corners using
