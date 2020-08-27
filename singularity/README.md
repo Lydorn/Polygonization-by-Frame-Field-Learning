@@ -1,3 +1,7 @@
+# Introduction
+
+I explain here how to use Singularity with Docker images (on Fedora) if ti is needed.
+
 # Install Singularity on Fedora
 
 I had to install these dependencies:
