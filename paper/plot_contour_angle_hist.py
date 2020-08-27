@@ -1,8 +1,3 @@
-import argparse
-import fnmatch
-import os
-
-import random
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -10,15 +5,7 @@ import shapely.geometry
 import shapely.affinity
 import skimage.io
 import skimage.measure
-from matplotlib.ticker import EngFormatter, StrMethodFormatter
-from tqdm import tqdm
-
-from functools import partial
-
-from lydorn_utils import python_utils, math_utils
-from lydorn_utils import print_utils
-
-from frame_field_learning import save_utils, viz_utils
+from matplotlib.ticker import StrMethodFormatter
 
 
 def compute_polygon_angles(polygon):
@@ -31,13 +18,6 @@ def compute_polygon_angles(polygon):
     longest_edge = min_rot_rect_edges[max_norms_index]
     main_angle = np.angle(longest_edge[0] + 1j*longest_edge[1])
     polygon = shapely.affinity.rotate(polygon, -main_angle, use_radians=True)
-    # ---
-
-    # min_rot_rect = polygon.minimum_rotated_rectangle
-    # plt.plot(*polygon.exterior.xy)
-    # plt.plot(*min_rot_rect.exterior.xy)
-    # plt.gca().set_aspect('equal', adjustable='box')
-    # plt.show()
     
     contour = np.array(polygon.exterior)
     edges = contour[1:] - contour[:-1]
@@ -48,9 +28,8 @@ def compute_polygon_angles(polygon):
     return angles
 
 
-def get_angles(background_filepath, mask_filepath, level=0.5, tol=0.1):
+def get_angles(mask_filepath, level=0.5, tol=0.1):
     # Read images
-    bg_image = skimage.io.imread(background_filepath) / 255
     mask = skimage.io.imread(mask_filepath) / 255
 
     # Compute contours
@@ -61,32 +40,6 @@ def get_angles(background_filepath, mask_filepath, level=0.5, tol=0.1):
     # Simplify
     polygons = [polygon.simplify(tol, preserve_topology=True) for polygon in polygons]
 
-    # fig = plt.figure()
-    # ax = fig.addsubplot(111)
-    # ax.imshow(bg_image)
-    # for contour in contours:
-    #     ax.plot(contour[:, 1], contour[:, 0], color="blue")
-    # ax.show()
-
-    # --- Plot polygons on image
-    minx = 1084
-    miny = 391+256
-    maxx = minx+1024
-    maxy = miny+256
-    box = shapely.geometry.box(minx, miny, maxx - 1, maxy - 1)
-    bg_image = bg_image[miny:maxy, minx:maxx]
-    # polygons_collection = shapely.geometry.GeometryCollection(polygons)
-    # cropped_multipolygon = polygons_collection.intersection(box)
-    cropped_polygons = []
-    for poly in polygons:
-        cropped_polygon = poly.intersection(box)
-        if cropped_polygon.geom_type == "Polygon" and not cropped_polygon.is_empty:
-            cropped_polygon = shapely.affinity.translate(cropped_polygon, xoff=-minx, yoff=-miny)
-            cropped_polygons.append(cropped_polygon)
-    out_filepath = os.path.splitext(mask_filepath)[0] + ".pdf"
-    viz_utils.save_poly_viz(bg_image, cropped_polygons, out_filepath, linewidths=10, markersize=10, alpha=0.5, draw_vertices=True)
-    # ---
-
     # Compute angles
     contours_angles = [compute_polygon_angles(polygon) for polygon in polygons]
 
@@ -95,22 +48,17 @@ def get_angles(background_filepath, mask_filepath, level=0.5, tol=0.1):
     return relative_degrees
 
 
-def plot_contour_angle_hist(background_filepath, list_info, level=0.5, tol=0.1):
-    legend = []
+def plot_contour_angle_hist(list_info, level=0.5, tol=0.1):
     start = 0
     stop = 180
     bin_count = 100
     bin_edges = np.linspace(start, stop, bin_count + 1)
     bin_width = (stop - start) / bin_count
-    bars_per_bin = len(list_info)
-    bin_width_per_bar = bin_width / bars_per_bin  # the width of the bars
     for i, info in enumerate(list_info):
-        degrees = get_angles(background_filepath, info["mask_filepath"], level, tol)
+        degrees = get_angles(info["mask_filepath"], level, tol)
         hist, bin_edges = np.histogram(degrees, bins=bin_edges)
         freq = hist / np.sum(hist)
-        # plt.bar(bin_edges[1:] + (i - bars_per_bin//2)*bin_width_per_bar - bin_width_per_bar/2, freq, width=bin_width_per_bar, alpha=1.0)
         plt.bar(bin_edges[1:] - bin_width/2, freq, width=bin_width, alpha=0.5, label=info["name"])
-        # legend.append(info["name"])
 
     plt.title("Histogram of relative contour angles")
     plt.xlabel("Relative angle")
@@ -123,7 +71,6 @@ def plot_contour_angle_hist(background_filepath, list_info, level=0.5, tol=0.1):
 
 
 def main():
-    background_filepath = "inria_dataset_test_sample.jpg"
 
     list_info = [
         {
@@ -136,7 +83,7 @@ def main():
         },
     ]
 
-    plot_contour_angle_hist(background_filepath, list_info, tol=1)
+    plot_contour_angle_hist(list_info, tol=1)
 
 
 if __name__ == '__main__':

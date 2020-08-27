@@ -1,25 +1,8 @@
-import argparse
-import fnmatch
-import os
-
-import random
-import numpy as np
 import matplotlib.pyplot as plt
 
-import numpy as np
-from tqdm import tqdm
-
-from functools import partial
-
 from pycocotools.coco import COCO
-from pycocotools import mask as cocomask
 import skimage.io as io
-import pylab
-import random
 import os
-
-from lydorn_utils import python_utils
-from lydorn_utils import print_utils
 
 
 def plot_result(output_filename_format, im, image_id, coco):

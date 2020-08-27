@@ -10,7 +10,7 @@ Inria, Domaine de Voluceau, Rocquencourt - BP 105
 
 Inria détient tous les droits de propriété sur le Logiciel.
 
-Le Logiciel a été déposé auprès de l'Agence pour la Protection des Programmes (APP) sous le numéro <A COMPLETER>.
+Le Logiciel a été déposé auprès de l'Agence pour la Protection des Programmes (APP) sous le numéro <numéro APP>.
 
 Le Logiciel est en cours de développement et Inria souhaite qu'il soit utilisé par la communauté scientifique de façon à le tester et l'évaluer, et afin qu’Inria puisse le cas échéant le faire évoluer.
 
@@ -59,7 +59,7 @@ Inria, Domaine de Voluceau, Rocquencourt - BP 105
 
 Inria holds all the ownership rights on the Software.
 
-The Software has been registered with the Agence pour la Protection des Programmes (APP) under <TO COMPLETE>.
+The Software has been registered with the Agence pour la Protection des Programmes (APP) under <APP number>.
 
 The Software is still being currently developed. It is the Inria’s aim for the Software to be used by the scientific community so as to test it and, evaluate it so that Inria may improve it.
 

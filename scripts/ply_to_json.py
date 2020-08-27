@@ -20,7 +20,7 @@ from plyfile import PlyData, PlyElement
 import shapely.geometry
 import shapely.ops
 
-from frame_field_learning import plot_utils, polygonize_utils, save_utils
+from frame_field_learning import polygonize_utils, save_utils
 
 
 def get_args():

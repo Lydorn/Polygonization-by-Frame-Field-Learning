@@ -40,7 +40,7 @@ This repository contains the official code for the paper:
 Pre-print\
 **\[[paper](https://arxiv.org/pdf/2004.14875.pdf), [video](https://www.youtube.com/watch?v=XdQMD3HTYCU&t=5s)\]**
 
-Whose short version is published as:
+Whose short version has been published as:
 
 **Regularized Building Segmentation by Frame Field Learning**\
 [Nicolas Girard](https://www-sop.inria.fr/members/Nicolas.Girard/),
