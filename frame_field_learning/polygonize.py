@@ -78,20 +78,3 @@ class Polygonizer():
 def polygonize(polygonize_params, seg_batch, crossfield_batch=None, pool=None, pre_computed=None):
     polygonizer = Polygonizer(polygonize_params, pool=pool)
     return polygonizer(polygonize_params, seg_batch, crossfield_batch=crossfield_batch, pre_computed=pre_computed)
-
-
-class PolygonizeTracingOne(object):
-    def __init__(self, polygonize_params):
-        self.polygonize_params = polygonize_params
-
-    def __call__(self, seg_crossfield):
-        """
-        :param seg_crossfield: ((H, W, C), (H, W, 4))
-        :return:
-        """
-        polygons = polygonize_tracing.polygonize(*seg_crossfield,
-                                                 self.polygonize_params["tracing"],
-                                                 self.polygonize_params["recenter"],
-                                                 self.polygonize_params["polygon"])
-
-        return polygons

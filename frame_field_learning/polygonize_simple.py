@@ -144,7 +144,7 @@ def polygonize(seg_batch, config, pool=None, pre_computed=None):
 
 
 def main():
-    from frame_field_learning import viz_utils
+    from frame_field_learning import plot_utils
     import os
     import torch
 
@@ -189,8 +189,8 @@ def main():
 
         base_filepath = os.path.splitext(args.seg_filepath)[0]
         filepath = base_filepath + extra_name + ".poly_simple.pdf"
-        # viz_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
-        viz_utils.save_poly_viz(image, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
+        # plot_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
+        plot_utils.save_poly_viz(image, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
 
 
 if __name__ == '__main__':

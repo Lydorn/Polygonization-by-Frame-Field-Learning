@@ -10,7 +10,7 @@ import skimage.measure
 
 from lydorn_utils import python_utils, geo_utils, math_utils
 
-from frame_field_learning import plot_utils, viz_utils, local_utils
+from frame_field_learning import plot_utils, local_utils
 import tifffile
 
 
@@ -112,7 +112,7 @@ def save_poly_viz(image, polygons, polygon_probs, base_filepath, name):
             save_poly_viz(image, polygons[key], polygon_probs[key], base_filepath, name + "." + key)
     elif type(polygons) == list:
         filepath = base_filepath + "." + name + ".pdf"
-        viz_utils.save_poly_viz(image, polygons, filepath, polygon_probs=polygon_probs)
+        plot_utils.save_poly_viz(image, polygons, filepath, polygon_probs=polygon_probs)
     else:
         raise TypeError("polygons has unrecognized type {}".format(type(polygons)))
 

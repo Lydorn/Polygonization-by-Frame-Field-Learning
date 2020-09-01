@@ -416,7 +416,7 @@ def polygonize(seg_batch, crossfield_batch, config, pool=None, pre_computed=None
 
 
 def main():
-    from frame_field_learning import viz_utils, inference
+    from frame_field_learning import framefield, inference
     import os
 
     def save_gt_poly(raw_pred_filepath, name):
@@ -426,7 +426,7 @@ def main():
         polygons = [shapely.geometry.Polygon(polygon[:, ::-1]) for polygon in polygon_arrays]
         base_filepath = os.path.join(os.path.dirname(raw_pred_filepath), name)
         filepath = base_filepath + "." + name + ".pdf"
-        viz_utils.save_poly_viz(image, polygons, filepath)
+        plot_utils.save_poly_viz(image, polygons, filepath)
 
     config = {
         "indicator_add_edge": False,
@@ -481,7 +481,7 @@ def main():
             polygons = out_contours_batch[i]
             base_filepath = os.path.join(os.path.dirname(raw_pred_filepath), name)
             filepath = base_filepath + ".poly_acm.pdf"
-            viz_utils.save_poly_viz(image, polygons, filepath)
+            plot_utils.save_poly_viz(image, polygons, filepath)
 
             # Load gt polygons
             save_gt_poly(raw_pred_filepath, name)
@@ -518,7 +518,7 @@ def main():
 
         # Save pdf viz
         filepath = base_filepath + extra_name + ".poly_acm.pdf"
-        viz_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
+        plot_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
     elif args.dirpath:
         seg_filename_list = fnmatch.filter(os.listdir(args.dirpath), "*.seg.tif")
         sorted(seg_filename_list)
@@ -589,7 +589,7 @@ def main():
         polygons = out_contours_batch[0]
 
         filepath = "demo_poly_acm.pdf"
-        viz_utils.save_poly_viz(seg, polygons, filepath, linewidths=0.5, draw_vertices=True, crossfield=crossfield)
+        plot_utils.save_poly_viz(seg, polygons, filepath, linewidths=0.5, draw_vertices=True, crossfield=crossfield)
 
 
 if __name__ == '__main__':
