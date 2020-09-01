@@ -12,6 +12,14 @@ Run as:
 mask_to_json.py --mask_dirpath <path to directory with the png masks>  --output_filepath <path to the output .json COCO format annotation file>
 ```
 
+## plot_framefield.py
+
+Use this script to plot a framefield saved as a .npy file. Can be useful for visualization. 
+Explanation about its arguments can be accessed with:
+```
+mask_to_json.py --help
+```
+
 ## ply_to_json.py
 
 Use this script to convert .ply segmentation polygons from the paper 
