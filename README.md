@@ -1,7 +1,3 @@
-### :warning: Under construction
-
-All the code is there. More detailed READMEs are coming soon...
-
 # Polygonal Building Segmentation by Frame Field Learning
 
 We add a frame field output to an image segmentation neural network to improve segmentation quality 
@@ -119,7 +115,20 @@ Simply set the ```--gpus``` argument to the number of gpus you want to use.
 However, for the first launch of the script on a particular dataset (when it will pre-process the data), 
 it is best to leave it at 1 as I did not implement multi-GPU synchronization when pre-processing datasets.
 
-# Launch inference on one image
+An example use is for training a model with a certain config file, like so:
+```python main.py --config configs/config.mapping_dataset.unet_resnet101_pretrained```
+which will train the Unet-Resnet101 on the CrowdAI Mapping Challenge dataset.
+The batch size can be adjusted like so:
+```python main.py --config configs/config.mapping_dataset.unet_resnet101_pretrained -b <new batch size>```
+
+When training is done, the script can be launched in eval mode, to evaluate the trained model:
+```python main.py --config configs/config.mapping_dataset.unet_resnet101_pretrained --mode eval```.
+Depending on the eval parameters of the config file, running this will output results on the test dataset.
+
+Finally, if you wish to compute AP and AR metrics with the COCO API, you can run:
+```python main.py --config configs/config.mapping_dataset.unet_resnet101_pretrained --mode eval_coco```.
+
+## Launch inference on one image
 
 Make sure the run folder has the correct structure:
 
