@@ -127,7 +127,7 @@ def train(gpu, config, shared_dict, barrier, train_ds, val_ds, backbone):
         print_utils.print_warning("WARNING: Cannot use amp because the apex library is not available!")
 
     # Wrap the model for distributed training
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu], find_unused_parameters=False)
+    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu], find_unused_parameters=True)
 
     # def lr_warmup_func(epoch):
     #     if epoch < config["warmup_epochs"]:

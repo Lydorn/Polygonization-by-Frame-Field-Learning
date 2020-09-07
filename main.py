@@ -19,8 +19,6 @@ except ImportError:
     exit()
 
 import frame_field_learning.local_utils
-from frame_field_learning.inference_from_filepath import inference_from_filepath
-
 
 from child_processes import train_process, eval_process
 from backbone import get_backbone
@@ -134,6 +132,8 @@ def get_args():
 
 
 def launch_inference_from_filepath(args):
+    from frame_field_learning.inference_from_filepath import inference_from_filepath
+
     # --- First step: figure out what run (experiment) is to be evaluated
     # Option 1: the run_name argument is given in which case that's our run
     run_name = None

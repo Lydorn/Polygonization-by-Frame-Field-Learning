@@ -2,9 +2,6 @@ import os
 
 import torch
 
-from frame_field_learning.train import train
-from frame_field_learning.evaluate import evaluate
-
 from lydorn_utils import python_utils
 from lydorn_utils import print_utils
 
@@ -13,6 +10,8 @@ from dataset_folds import get_folds
 
 
 def train_process(gpu, config, shared_dict, barrier):
+    from frame_field_learning.train import train
+
     print_utils.print_info("GPU {} -> Ready. There are {} GPU(s) available on this node.".format(gpu, torch.cuda.device_count()))
 
     torch.manual_seed(0)  # Ensure same seed for all processes
@@ -52,6 +51,8 @@ def train_process(gpu, config, shared_dict, barrier):
 
 
 def eval_process(gpu, config, shared_dict, barrier):
+    from frame_field_learning.evaluate import evaluate
+
     torch.manual_seed(0)  # Ensure same seed for all processes
     # --- Find data directory --- #
     root_dir_candidates = [os.path.join(data_dirpath, config["dataset_params"]["root_dirname"]) for data_dirpath in

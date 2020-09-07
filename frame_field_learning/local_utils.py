@@ -19,7 +19,7 @@ def compute_max_disp(disp_params):
 
 def get_git_revision_hash():
     try:
-        hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode("utf-8")[:-1]
+        hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'], stderr=subprocess.STDOUT).decode("utf-8")[:-1]
     except subprocess.CalledProcessError:
         hash = None
     return hash
