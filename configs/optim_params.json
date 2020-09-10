@@ -9,7 +9,7 @@
   "max_epoch": 1000,
   "log_steps": 200,
   "checkpoint_epoch": 1,
-  "checkpoints_to_keep": 10,  // outputs
+  "checkpoints_to_keep": 5,  // outputs
   "logs_dirname": "logs",
   "checkpoints_dirname": "checkpoints"
 }
