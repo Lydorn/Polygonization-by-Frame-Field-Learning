@@ -154,7 +154,7 @@ The outputs will be saved next to the input image
 
 ## Download trained models
 
-We provide already-trained models so you can run inference right away. Download here: [https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing]().
+We provide already-trained models so you can run inference right away. Download here: [https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing](https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing).
 Each model was trained in a "run", whose folder (named with the format ```<run_name> | <yyyy-mm-dd hh:mm:ss>```) you can download at the provided link.
 You should then place those runs in a folder named "runs" inside the "frame_field_learning" folder like so:
 ```
