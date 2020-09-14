@@ -136,9 +136,9 @@ Make sure the run folder has the correct structure:
 
 ```
 Polygonization-by-Frame-Field-Learning
-|-- frame-field-learning
+|-- frame_field_learning
 |   |-- runs
-|   |   |-- <run_name> | yyyy-mm-dd hh:mm:ss
+|   |   |-- <run_name> | <yyyy-mm-dd hh:mm:ss>
 |   |   `-- ...
 |   |-- inference.py
 |   `-- ...
@@ -151,6 +151,26 @@ Execute the [main.py] script like so (filling values for arguments run_name and 
 ```python main.py --run_name <run_name> --in_filepath <your_image_filepath>```
 
 The outputs will be saved next to the input image
+
+## Download trained models
+
+We provide already-trained models so you can run inference right away. Download here: [https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing]().
+Each model was trained in a "run", whose folder (named with the format ```<run_name> | <yyyy-mm-dd hh:mm:ss>```) you can download at the provided link.
+You should then place those runs in a folder named "runs" inside the "frame_field_learning" folder like so:
+```
+Polygonization-by-Frame-Field-Learning
+|-- frame_field_learning
+|   |-- runs
+|   |   |-- inria_dataset_polygonized.unet_resnet101_pretrained.leaderboard | 2020-06-02 07:57:31
+|   |   |-- mapping_dataset.unet_resnet101_pretrained.field_off.train_val | 2020-05-21 08:33:20
+|   |   |-- mapping_dataset.unet_resnet101_pretrained.train_val | 2020-05-21 08:32:48
+|   |   `-- ...
+|   |-- inference.py
+|   `-- ...
+|-- main.py
+|-- README.md (this file)
+`-- ...
+```
 
 # Cite:
 
