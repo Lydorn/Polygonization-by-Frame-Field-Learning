@@ -1,6 +1,5 @@
 from . import polygonize_utils
 from . import polygonize_acm
-from . import polygonize_asm
 from . import polygonize_simple
 
 from lydorn_utils import print_utils
@@ -9,7 +8,7 @@ from lydorn_utils import print_utils
 class Polygonizer():
     def __init__(self, polygonize_params, pool=None):
         self.pool = pool
-        self.polygonizer_asm = polygonize_asm.PolygonizerASM(polygonize_params["asm_method"], pool=pool)
+        self.polygonizer_asm = None
 
     def __call__(self, polygonize_params, seg_batch, crossfield_batch=None, pre_computed=None):
         """
@@ -61,9 +60,12 @@ class Polygonizer():
                                                                     polygonize_params["acm_method"], pool=self.pool,
                                                                     pre_computed=pre_computed)
         elif polygonize_params["method"] == "asm":
+            from . import polygonize_asm
             if crossfield_batch is None:
                 # Cannot run the ASM method
                 return None, None
+            if self.polygonizer_asm is None:
+                self.polygonizer_asm = polygonize_asm.PolygonizerASM(polygonize_params["asm_method"], pool=self.pool)
             polygons_batch, probs_batch = self.polygonizer_asm(seg_batch, crossfield_batch, pre_computed=pre_computed)
         elif polygonize_params["method"] == "simple":
             polygons_batch, probs_batch = polygonize_simple.polygonize(seg_batch, polygonize_params["simple_method"],
