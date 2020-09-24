@@ -3,16 +3,28 @@
 
   "run_name": "inria_dataset_osm_aligned.unet_resnet101_pretrained",
 
+  "data_aug_params": {
+    "enable": true
+  },
 
-
-
+  "dataset_params": {
+    "small": false
+  },
 
   "backbone_params": {
     "defaults_filepath": "configs/backbone_params.unet_resnet101.json",  // Path from the project's root to a JSON with default values for backbone_params
     "pretrained": true
   },
 
-   "optim_params": {
-    "batch_size": 10  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
+  "loss_params": {
+    "seg_loss_params": {
+      "use_size": false
+    }
+  },
+
+ "optim_params": {
+    "optimizer": "RMSProp",
+    "gamma": 0.99,
+    "batch_size": 3  // Overwrite default batch size per GPU. The effective batch size is effective_batch_size=world_size*batch_size
   }
 }
