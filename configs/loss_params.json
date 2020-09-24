@@ -5,15 +5,15 @@
       "max_samples": 1000  // Per GPU
     },
     "coefs": {
-        "epoch_thresholds": [0, 5],  // From 0 to 5: gradually go from coefs[0] to coefs[1] for list coefs
-        "seg": 10,
-        "crossfield_align": 1,
-        "crossfield_align90": 0.2,
-        "crossfield_smooth": 0.005,
-        "seg_interior_crossfield": [0.0, 0.2],
-        "seg_edge_crossfield": [0.0, 0.2],
-        "seg_edge_interior": [0.0, 0.2]
-      }
+          "epoch_thresholds": [0, 5, 10],  // From 0 to 5: gradually go from coefs[0] to coefs[1] for list coefs
+          "seg": 10,
+          "crossfield_align": 1,
+          "crossfield_align90": 0.2,
+          "crossfield_smooth": 0.005,
+          "seg_interior_crossfield": [0, 0, 0.2],
+          "seg_edge_crossfield": [0, 0, 0.2],
+          "seg_edge_interior": [0, 0, 0.2]
+        }
   },
   "seg_loss_params": {  // https://github.com/neptune-ai/open-solution-mapping-challenge/blob/master/neptune.yaml
     "bce_coef": 1.0,
