@@ -1,5 +1,3 @@
-:warning: Development branch
-
 # Polygonal Building Segmentation by Frame Field Learning
 
 We add a frame field output to an image segmentation neural network to improve segmentation quality 
