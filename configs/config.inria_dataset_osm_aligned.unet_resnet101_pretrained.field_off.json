@@ -1,9 +1,9 @@
 {
   "defaults_filepath": "configs/config.defaults.inria_dataset_osm_aligned.json",
 
-  "run_name": "inria_dataset_osm_aligned.unet_resnet101_pretrained",
+  "run_name": "inria_dataset_osm_aligned.unet_resnet101_pretrained.field_off",
 
-
+  "compute_crossfield": false,
 
   "backbone_params": {
     "defaults_filepath": "configs/backbone_params.unet_resnet101.json",  // Path from the project's root to a JSON with default values for backbone_params
