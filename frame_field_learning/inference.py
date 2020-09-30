@@ -160,3 +160,5 @@ def load_checkpoint(model, checkpoints_dirpath, device):
     checkpoint = torch.load(filepath, map_location=device)  # map_location is used to load on current device
 
     model.load_state_dict(checkpoint['model_state_dict'])
+
+    return model
