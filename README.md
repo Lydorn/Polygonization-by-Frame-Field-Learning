@@ -169,6 +169,7 @@ Polygonization-by-Frame-Field-Learning
 |-- README.md (this file)
 `-- ...
 ```
+Because Google Drive reformats folder names, you have to rename the run folders as above.
 
 # Cite:
 

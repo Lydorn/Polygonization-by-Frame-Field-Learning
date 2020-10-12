@@ -1,3 +1,5 @@
+import sys
+
 from tqdm import tqdm
 import scipy
 
@@ -56,7 +58,7 @@ def inference_no_patching(config, model, tile_data):
                                        "Note that in eval mode, the effective bath_size is equal to double the batch_size "
                                        "because gradients do not need to "
                                        "be computed so double the memory is available. "
-                                       "You can override the effective batch_size with the eval_batch_size parameter."
+                                       "You can override the effective batch_size with the --eval_batch_size command-line argument."
                                        .format(config["optim_params"]["eval_batch_size"]))
             else:
                 print_utils.print_info("INFO: The effective batch_size is 1 but the GPU still ran out of memory."
@@ -64,7 +66,7 @@ def inference_no_patching(config, model, tile_data):
                                        "--eval_patch_size is the size of the patch and should be chosen as big as memory allows.\n"
                                        "--eval_patch_overlap (optional, default=200) adds overlaps between patches to avoid border artifacts."
                                        .format(config["optim_params"]["eval_batch_size"]))
-            raise e
+            sys.exit()
 
         tile_data["seg"] = pred["seg"]
         if "crossfield" in pred:
