@@ -160,8 +160,8 @@ Polygonization-by-Frame-Field-Learning
 |-- frame_field_learning
 |   |-- runs
 |   |   |-- inria_dataset_polygonized.unet_resnet101_pretrained.leaderboard | 2020-06-02 07:57:31
-|   |   |-- mapping_dataset.unet_resnet101_pretrained.field_off.train_val | 2020-05-21 08:33:20
-|   |   |-- mapping_dataset.unet_resnet101_pretrained.train_val | 2020-05-21 08:32:48
+|   |   |-- mapping_dataset.unet_resnet101_pretrained.field_off.train_val | 2020-09-07 11:54:48
+|   |   |-- mapping_dataset.unet_resnet101_pretrained.train_val | 2020-09-07 11:28:51
 |   |   `-- ...
 |   |-- inference.py
 |   `-- ...
