@@ -120,7 +120,9 @@ As our method requires annotations to be polygons in order to compute the ground
 
 The *Inria OSM dataset* has aligned annotations pulled from OpenStreetMap.
 
-The *Inria Polygonized dataset* has polygon annotations obtained from using our frame field polygonization algorithm on the original raster masks.
+The *Inria Polygonized dataset* has polygon annotations obtained from using our frame field polygonization algorithm on the original raster masks. 
+This was done by running the ```polygonize_mask.py``` script like so:
+```python polygonize_mask.py --run_name inria_dataset_osm_mask_only.unet16 --filepath ~/data/AerialImageDataset/raw/train/gt/*.tif```
 
 Here is the link to download this new ground truth in both cases: [https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing](https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing).
 
