@@ -83,10 +83,20 @@ Each dataset has it's own sub-folder, usually named with a short version of that
 Each dataset sub-folder should have a "raw" folder inside containing all the original folders and files fo the datset.
 When pre-processing data, "processed" folders will be created alongside the "raw" folder.
 
-For example, the CrowdAI Mapping Challenge dataset should have the following file structure inside the container:
+For example, here is an example working file structure inside the container:
 
 ```
 /data 
+|-- AerialImageDataset
+     |-- raw
+         |-- train
+         |   |-- aligned_gt_polygons_2
+         |   |-- gt
+         |   |-- gt_polygonized
+         |   |-- images
+         `-- test
+             |-- aligned_gt_polygons_2
+             |-- images
 `-- mapping_challenge_dataset
      |-- raw
          |-- train
@@ -102,6 +112,17 @@ you can change the path to datasets in config files.
 You can modify the "data_dir_candidates" list in the config to only include your path. 
 The training script checks this list of paths one at a time and picks the first one that exists. 
 It then appends the "data_root_partial_dirpath" directory to get to the dataset.
+
+## Inria Aerial Image Labeling Dataset
+
+For the Inria dataset, the original ground truth is just a collection of raster masks. 
+As our method requires annotations to be polygons in order to compute the ground truth angle for the frame field, we made 2 versions of the dataset:
+
+The *Inria OSM dataset* has aligned annotations pulled from OpenStreetMap.
+
+The *Inria Polygonized dataset* has polygon annotations obtained from using our frame field polygonization algorithm on the original raster masks.
+
+Here is the link to download this new ground truth in both cases: [https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing](https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing).
 
 # Running the main.py script
 
@@ -152,7 +173,8 @@ The outputs will be saved next to the input image
 
 ## Download trained models
 
-We provide already-trained models so you can run inference right away. Download here: [https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing](https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing).
+We provide already-trained models so you can run inference right away. 
+Download here: [https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing](https://drive.google.com/drive/folders/1poTQbpCz12ra22CsucF_hd_8dSQ1T3eT?usp=sharing).
 Each model was trained in a "run", whose folder (named with the format ```<run_name> | <yyyy-mm-dd hh:mm:ss>```) you can download at the provided link.
 You should then place those runs in a folder named "runs" inside the "frame_field_learning" folder like so:
 ```
@@ -169,6 +191,7 @@ Polygonization-by-Frame-Field-Learning
 |-- README.md (this file)
 `-- ...
 ```
+Because Google Drive reformats folder names, you have to rename the run folders as above.
 
 # Cite:
 

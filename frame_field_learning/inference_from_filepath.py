@@ -12,6 +12,7 @@ from . import local_utils
 
 from torch_lydorn import torchvision
 
+from lydorn_utils import print_utils
 from lydorn_utils import run_utils
 
 
@@ -31,6 +32,12 @@ def inference_from_filepath(config, in_filepaths, backbone):
     for in_filepath in pbar:
         pbar.set_postfix(status="Loading image")
         image = skimage.io.imread(in_filepath)
+        if 3 < image.shape[2]:
+            print_utils.print_info(f"Image {in_filepath} has more than 3 channels. Keeping the first 3 channels and discarding the rest...")
+            image = image[:, :, :3]
+        elif image.shape[2] < 3:
+            print_utils.print_error(f"Image {in_filepath} has only {image.shape[2]} channels but the network expects 3 channels.")
+            raise ValueError
         image_float = image / 255
         mean = np.mean(image_float.reshape(-1, image_float.shape[-1]), axis=0)
         std = np.std(image_float.reshape(-1, image_float.shape[-1]), axis=0)

@@ -162,6 +162,14 @@ def launch_inference_from_filepath(args):
                                 f"Exiting now...")
         sys.exit()
 
+    # --- Add command-line arguments
+    if args.batch_size is not None:
+        config["optim_params"]["batch_size"] = args.batch_size
+    if args.eval_batch_size is not None:
+        config["optim_params"]["eval_batch_size"] = args.eval_batch_size
+    else:
+        config["optim_params"]["eval_batch_size"] = 2*config["optim_params"]["batch_size"]
+
     # --- Load params in config set as relative path to another JSON file
     config = run_utils.load_defaults_in_config(config, filepath_key="defaults_filepath")
 
@@ -176,6 +184,7 @@ def launch_inference_from_filepath(args):
 
 
 def launch_train(args):
+    assert args.config is not None, "Argument --config must be specified. Run 'python main.py --help' for help on arguments."
     config = run_utils.load_config(args.config)
     if config is None:
         print_utils.print_error(
@@ -360,7 +369,7 @@ def main():
     # --- Process args --- #
     args = get_args()
 
-    if args.in_filepath: # Check if in_filepath is specified, it which case run the model on that image
+    if args.in_filepath:  # Check if in_filepath is specified, it which case run the model on that image
         launch_inference_from_filepath(args)
     elif args.mode == "train":
         launch_train(args)
