@@ -1,8 +1,8 @@
 {
   "data_dir_candidates": [
-    "/data/titane/user/nigirard/data", // Try cluster /data directory
-    "~/data", // In home directory (docker)
-    "/data" // In landsat's /data volume (docker)
+    "/data/titane/user/nigirard/data",
+    "~/data",
+    "/data"
   ],
   "num_workers": null,  // If null, will use multiprocess.cpu_count() workers in total
   "data_aug_params": {
