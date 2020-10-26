@@ -58,12 +58,11 @@ def get_args():
         default="runs",
         type=str,
         help='Directory where runs are recorded (model saves and logs).')
-
     argparser.add_argument(
         '--run_name',
         type=str,
-        help='Continue training from run_name or if it does not exist, start training this run from scratch.'
-             'This is a single word, without the timestamp.')
+        help='Name of the run to use.'
+             'That name does not include the timestamp of the folder name: <run_name> | <yyyy-mm-dd hh:mm:ss>.')
     argparser.add_argument(
         '--new_run',
         action='store_true',

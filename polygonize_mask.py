@@ -83,8 +83,8 @@ def get_args():
         '--run_name',
         required=True,
         type=str,
-        help='Continue training from run_name or if it does not exist, start training this run from scratch.'
-             'This is a single word, without the timestamp.')
+        help='Name of the run to use for predicting the frame field needed by the polygonization algorithm.'
+             'That name does not include the timestamp of the folder name: <run_name> | <yyyy-mm-dd hh:mm:ss>.')
     argparser.add_argument(
         '--eval_patch_size',
         type=int,
