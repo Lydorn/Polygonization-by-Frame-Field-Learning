@@ -34,7 +34,7 @@ def main():
 
     stat_names = ["AP", "AP_50", "AP_75", "AP_S", "AP_M", "AP_L", "AR", "AR_50", "AR_75", "AR_S", "AR_M", "AR_L"]
 
-    dirname_list = os.listdir(args.dirpath)
+    dirname_list = next(os.walk(args.dirpath))[1]
     dirname_list = sorted(dirname_list)
     for dirname in dirname_list:
         dirpath = os.path.join(args.dirpath, dirname)
