@@ -3,7 +3,7 @@
 ###################################################################
 # Use this script to polygonize binary mask detection in COCO format (for example frome the Open Solution from the CrowdAI challenge:
 # https://github.com/neptune-ai/open-solution-mapping-challenge)
-# using the frame field polygonization method and save th eoutput in COCO format.
+# using the frame field polygonization method and save the output in COCO format.
 # Example use:
 # python polygonize_coco.py --run_dirpath "/home/lydorn/repos/lydorn/Polygonization-by-Frame-Field-Learning/frame_field_learning/runs/mapping_dataset.unet_resnet101_pretrained.train_val | 2020-09-07 11:28:51" --images_dirpath "/home/lydorn/data/mapping_challenge_dataset/raw/val/images" --gt_filepath /home/lydorn/data/mapping_challenge_dataset/raw/val/annotation.json --in_filepath "/home/lydorn/data/mapping_challenge_dataset/eval_runs/mapping_dataset.open_solution | 0000-00-00 00:00:00/test.annotation.seg.json" --out_filepath "/home/lydorn/data/mapping_challenge_dataset/eval_runs/mapping_dataset.open_solution | 0000-00-00 00:00:00/test.annotation.poly.json"
 ###################################################################
