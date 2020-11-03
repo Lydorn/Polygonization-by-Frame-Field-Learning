@@ -132,7 +132,7 @@ def save_shapefile(polygons, base_filepath, name, image_filepath):
         raise TypeError("polygons has unrecognized type {}".format(type(polygons)))
 
 
-def save_geojson(polygons, base_filepath, name=None, image_filepath=None):
+def save_geojson(polygons, base_filepath, name=None):
     # TODO: add georef and features
     if name is not None:
         filepath = base_filepath + "." + name + ".geojson"
@@ -212,7 +212,7 @@ def seg_coco(sample):
         skimage_bbox = contour_props["bbox"]
         obj_mask = seg_mask[skimage_bbox[0]:skimage_bbox[2], skimage_bbox[1]:skimage_bbox[3]]
         obj_seg_interior = seg_interior[skimage_bbox[0]:skimage_bbox[2], skimage_bbox[1]:skimage_bbox[3]]
-        score = float(np.mean(obj_seg_interior[obj_mask]))
+        score = float(np.mean(obj_seg_interior * obj_mask))
 
         coco_bbox = [skimage_bbox[1], skimage_bbox[0],
                      skimage_bbox[3] - skimage_bbox[1], skimage_bbox[2] - skimage_bbox[0]]
