@@ -140,7 +140,7 @@ def launch_inference_from_filepath(args):
     if args.run_name is not None:
         run_name = args.run_name
     # Else option 2: Check if a config has been given to look for the run_name
-    if args.config is not None:
+    elif args.config is not None:
         config = run_utils.load_config(args.config)
         if config is not None and "run_name" in config:
             run_name = config["run_name"]
