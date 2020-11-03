@@ -41,8 +41,13 @@ def get_args():
         type=str,
         nargs='*',
         help='For launching prediction on several images, use this argument to specify their paths.'
-             'Prediction outputs will be saved next to them.'
+             'If --out_dirpath is specified, prediction outputs will be saved there..'
+             'If --out_dirpath is not specified, predictions will be saved next to inputs.'
              'Make sure to also specify the run_name of the model to use for prediction.')
+    argparser.add_argument(
+        '--out_dirpath',
+        type=str,
+        help='Path to the output directory of prediction when using the --in_filepath option to launch prediction on several images.')
 
     argparser.add_argument(
         '-c', '--config',
@@ -140,9 +145,9 @@ def launch_inference_from_filepath(args):
     if args.run_name is not None:
         run_name = args.run_name
     # Else option 2: Check if a config has been given to look for the run_name
-    elif args.config is not None:
+    if args.config is not None:
         config = run_utils.load_config(args.config)
-        if config is not None and "run_name" in config:
+        if config is not None and "run_name" in config and run_name is None:
             run_name = config["run_name"]
     # Else abort...
     if run_name is None:
@@ -179,7 +184,7 @@ def launch_inference_from_filepath(args):
         config["eval_params"]["patch_overlap"] = args.eval_patch_overlap
 
     backbone = get_backbone(config["backbone_params"])
-    inference_from_filepath(config, args.in_filepath, backbone)
+    inference_from_filepath(config, args.in_filepath, backbone, args.out_dirpath)
 
 
 def launch_train(args):
