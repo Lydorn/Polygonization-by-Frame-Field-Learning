@@ -1,0 +1,5 @@
+{
+  "defaults_filepath": "configs/config.defaults.mapping_dataset.json",
+
+  "run_name": "mapping_dataset.open_solution_full"
+}
