@@ -8,9 +8,9 @@
   "patch_size": 1024,
 
   "save_individual_outputs": {
-    "seg": false,
+    "seg": true,
     "seg_mask": true,
-    "poly_shapefile": false,
+    "poly_shapefile": true,
     "poly_viz": false
   },
 
