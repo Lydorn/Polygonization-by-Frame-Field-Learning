@@ -23,12 +23,12 @@ import sys
 from tqdm import tqdm
 
 import torch
-import torchvision
 
 from frame_field_learning.model import FrameFieldModel
-from frame_field_learning import inference, polygonize_acm, data_transforms, save_utils
+from frame_field_learning import inference, polygonize_acm, data_transforms, save_utils, polygonize_utils
 from lydorn_utils import run_utils, print_utils, python_utils
 from backbone import get_backbone
+import torch_lydorn
 
 pylab.rcParams['figure.figsize'] = (8.0, 10.0)
 
@@ -42,11 +42,11 @@ polygonize_config = {
     "data_coef": 0.1,
     "length_coef": 0.4,
     "crossfield_coef": 0.5,
-    "poly_lr": 0.01,
-    "warmup_iters": 100,
+    "poly_lr": 0.001,
+    "warmup_iters": 499,
     "warmup_factor": 0.1,
     "device": "cuda",
-    "tolerance": 0.5,
+    "tolerance": 0.125,
     "seg_threshold": 0.5,
     "min_area": 10
 }
@@ -116,12 +116,15 @@ def run_polygonization(sample_data_list):
     # Polygonize input mask with predicted frame field
     seg_batch = tile_data["mask_image"]
     crossfield_batch = tile_data["crossfield"]
-    polygons_batch, probs_batch = polygonize_acm.polygonize(seg_batch, crossfield_batch, polygonize_config)
+
+    polygons_batch, _ = polygonize_acm.polygonize(seg_batch, crossfield_batch, polygonize_config)
+    # Discard the probs computed by polygonize(). They will be computed next using the score_image
 
     # Convert to COCO format
     coco_ann_list = []
-    for polygons, probs, img_id in zip(polygons_batch, probs_batch, tile_data["img_id"]):
-        coco_ann = save_utils.poly_coco(polygons, probs, image_id=img_id)
+    for polygons, img_id, score_image in zip(polygons_batch, tile_data["img_id"], tile_data["score_image"]):
+        scores = polygonize_utils.compute_geom_prob(polygons, score_image[0, :, :].numpy())
+        coco_ann = save_utils.poly_coco(polygons, scores, image_id=img_id)
         coco_ann_list.extend(coco_ann)
 
     return coco_ann_list
@@ -151,6 +154,7 @@ def polygonize_masks(run_dirpath, images_dirpath, gt_filepath, in_filepath, out_
 
     # --- Polygonize input COCO mask detections --- #
     img_ids = coco_dt.getImgIds()
+    # img_ids = sorted(img_ids)[:1]  # TODO: rm limit
     output_annotations = []
 
     model_data_list = []  # Used to accumulate inputs and run model inference on it.
@@ -162,16 +166,19 @@ def polygonize_masks(run_dirpath, images_dirpath, gt_filepath, in_filepath, out_
 
         # Draw mask from input COCO mask annotations
         mask_image = np.zeros((img["height"], img["width"]))
+        score_image = np.zeros((img["height"], img["width"]))
         dts = coco_dt.loadAnns(coco_dt.getAnnIds(imgIds=img_id))
         for dt in dts:
             dt_mask = cocomask.decode(dt["segmentation"])
             mask_image = np.maximum(mask_image, dt_mask)
+            score_image = np.maximum(score_image, dt_mask * dt["score"])
 
         # Accumulate inputs into the current batch
         sample_data = {
             "img_id": [img_id],
-            "mask_image": torchvision.transforms.functional.to_tensor(mask_image)[None, ...].float(),
-            "image": torchvision.transforms.functional.to_tensor(image)[None, ...],
+            "mask_image": torch_lydorn.torchvision.transforms.functional.to_tensor(mask_image)[None, ...].float(),
+            "score_image": torch_lydorn.torchvision.transforms.functional.to_tensor(score_image)[None, ...].float(),
+            "image": torch_lydorn.torchvision.transforms.functional.to_tensor(image)[None, ...],
             "image_mean": torch.tensor(image_mean)[None, ...],
             "image_std": torch.tensor(image_std)[None, ...]
         }

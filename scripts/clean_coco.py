@@ -43,11 +43,16 @@ def get_args():
 
 def clean_one(im_data):
     img, dts = im_data
-    seg_image = np.zeros((img["height"], img["width"]))
+    seg_image = np.zeros((img["height"], img["width"]), dtype=np.float)
+    weights_image = np.zeros((img["height"], img["width"]), dtype=np.float)
     for dt in dts:
-        dt_mask = cocomask.decode(dt["segmentation"])
-        dt_seg = dt_mask * dt["score"]
-        seg_image = np.maximum(seg_image, dt_seg)
+        if 0 < dt["score"]:
+            dt_mask = cocomask.decode(dt["segmentation"])
+            dt_seg = dt_mask * dt["score"]
+            seg_image += dt_seg
+            weights_image += dt_mask
+    weights_image[weights_image == 0] = 1  # Avoid dividing by zero:
+    seg_image /= weights_image  # Avg aggr
     mask_image = 0.5 < seg_image
 
     sample = {
@@ -64,7 +69,7 @@ def clean_masks(gt_filepath, in_filepath, out_filepath):
     coco_dt = coco_gt.loadRes(in_filepath)
 
     # --- Clean input COCO mask detections --- #
-    img_ids = coco_dt.getImgIds()
+    img_ids = sorted(coco_dt.getImgIds())
     im_data_list = []
     for img_id in img_ids:
         img = coco_gt.loadImgs(img_id)[0]

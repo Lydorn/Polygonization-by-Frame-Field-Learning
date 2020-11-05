@@ -94,12 +94,18 @@ def get_args():
         type=int,
         help='When evaluating, patch the tile with the specified overlap to reduce edge artifacts when reconstructing '
              'the whole tile')
+    argparser.add_argument(
+        '--out_ext',
+        type=str,
+        default="geojson",
+        choices=['geojson', 'shp'],
+        help="File extension of the output geometry. 'geojson': GeoJSON,  'shp': shapefile")
 
     args = argparser.parse_args()
     return args
 
 
-def polygonize_mask(config, mask_filepaths, backbone):
+def polygonize_mask(config, mask_filepaths, backbone, out_ext):
     """
     Reads
     @param args:
@@ -157,7 +163,13 @@ def polygonize_mask(config, mask_filepaths, backbone):
         # save_utils.save_polygons(tile_data["polygons"], base_filepath, "polygons", tile_data["image_filepath"])
         # save_utils.save_poly_viz(tile_data["image"], tile_data["polygons"], tile_data["polygon_probs"], base_filepath, name)
         # geo_utils.save_shapefile_from_shapely_polygons(tile_data["polygons"], mask_filepath, base_filepath + "." + name + ".shp")
-        save_utils.save_geojson(tile_data["polygons"], base_filepath)
+
+        if out_ext == "geojson":
+            save_utils.save_geojson(tile_data["polygons"], base_filepath)
+        elif out_ext == "shp":
+            save_utils.save_shapefile(tile_data["polygons"], base_filepath, "polygonized", mask_filepath)
+        else:
+            raise ValueError(f"out_ext '{out_ext}' invalid!")
 
         # --- Compute IoU of mask image and extracted polygons
         polygons_raster = rasterizer(mask_image, tile_data["polygons"])[:, :, 0]
@@ -191,7 +203,7 @@ def main():
 
     backbone = get_backbone(config["backbone_params"])
 
-    polygonize_mask(config, args.filepath, backbone)
+    polygonize_mask(config, args.filepath, backbone, args.out_ext)
 
 
 if __name__ == '__main__':
