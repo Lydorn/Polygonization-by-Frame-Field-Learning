@@ -14,6 +14,23 @@ from frame_field_learning import plot_utils, local_utils
 import tifffile
 
 
+def get_save_filepath(base_filepath, name=None, ext=""):
+    if type(base_filepath) is tuple:
+        if name is not None:
+            save_filepath = os.path.join(base_filepath[0], name, base_filepath[1] + ext)
+        else:
+            save_filepath = os.path.join(base_filepath[0], base_filepath[1] + ext)
+    elif type(base_filepath) is str:
+        if name is not None:
+            save_filepath = base_filepath + "." + name + ext
+        else:
+            save_filepath = base_filepath + ext
+    else:
+        raise TypeError(f"base_filepath should be either of tuple or str, not {type(base_filepath)}")
+    os.makedirs(os.path.dirname(save_filepath), exist_ok=True)
+    return save_filepath
+
+
 def save_outputs(tile_data, config, eval_dirpath, split_name, flag_filepath_format):
     # print("--- save_outputs() ---")
     split_eval_dirpath = os.path.join(eval_dirpath, split_name)
@@ -39,7 +56,7 @@ def save_outputs(tile_data, config, eval_dirpath, split_name, flag_filepath_form
     if config["eval_params"]["save_individual_outputs"]["seg"]:
         save_seg(tile_data["seg"], base_filepath, "seg", image_filepath)
     if config["eval_params"]["save_individual_outputs"]["seg_mask"]:
-        save_seg_mask(tile_data["seg_mask"], os.path.join(split_eval_dirpath, "seg_mask", tile_data["name"]), image_filepath)
+        save_seg_mask(tile_data["seg_mask"], (split_eval_dirpath, tile_data["name"]), "seg_mask", image_filepath)
     if config["eval_params"]["save_individual_outputs"]["seg_opencities_mask"]:
         save_opencities_mask(tile_data["seg_mask"], base_filepath, "drivendata",
                              image_filepath)
@@ -75,18 +92,17 @@ def save_seg(seg, base_filepath, name, image_filepath):
     seg_display = plot_utils.get_seg_display(seg)
     if seg_display.dtype != np.uint8:
         seg_display = (255 * seg_display).astype(np.uint8)
-    seg_display_filepath = base_filepath + "." + name + ".tif"
+    seg_display_filepath = get_save_filepath(base_filepath, name, ".tif")
     # with warnings.catch_warnings():
     #     warnings.simplefilter("ignore")
     #     skimage.io.imsave(seg_display_filepath, seg_display)
     geo_utils.save_image_as_geotiff(seg_display_filepath, seg_display, image_filepath)
 
 
-def save_seg_mask(seg_mask, base_filepath, image_filepath):
+def save_seg_mask(seg_mask, base_filepath, name, image_filepath):
     seg_mask = seg_mask.numpy()
     out = (255 * seg_mask).astype(np.uint8)[:, :, None]
-    out_filepath = base_filepath + ".tif"
-    os.makedirs(os.path.dirname(out_filepath), exist_ok=True)
+    out_filepath = get_save_filepath(base_filepath, name, ".tif")
     geo_utils.save_image_as_geotiff(out_filepath, out, image_filepath)
 
 
@@ -98,7 +114,7 @@ def save_seg_luxcarta_format(seg, base_filepath, name, image_filepath):
     if 2 <= seg.shape[2]:
         seg_edge = 0.5 < seg[..., 1]
         seg_luxcarta[seg_edge] = 2
-    seg_luxcarta_filepath = base_filepath + "." + name + ".tif"
+    seg_luxcarta_filepath = get_save_filepath(base_filepath, name, ".tif")
     geo_utils.save_image_as_geotiff(seg_luxcarta_filepath, seg_luxcarta, image_filepath)
 
 
@@ -111,7 +127,7 @@ def save_poly_viz(image, polygons, polygon_probs, base_filepath, name):
         for key in polygons.keys():
             save_poly_viz(image, polygons[key], polygon_probs[key], base_filepath, name + "." + key)
     elif type(polygons) == list:
-        filepath = base_filepath + "." + name + ".pdf"
+        filepath = get_save_filepath(base_filepath, name, ".pdf")
         plot_utils.save_poly_viz(image, polygons, filepath, polygon_probs=polygon_probs)
     else:
         raise TypeError("polygons has unrecognized type {}".format(type(polygons)))
@@ -123,7 +139,7 @@ def save_shapefile(polygons, base_filepath, name, image_filepath):
         for key, item in polygons.items():
             save_shapefile(item, base_filepath, name + "." + key, image_filepath)
     elif type(polygons) == list:
-        filepath = base_filepath + "." + name + ".shp"
+        filepath = get_save_filepath(base_filepath, name, ".shp")
         if type(polygons[0]) == np.array:
             geo_utils.save_shapefile_from_polygons(polygons, image_filepath, filepath)
         elif type(polygons[0]) == shapely.geometry.polygon.Polygon:
@@ -134,10 +150,7 @@ def save_shapefile(polygons, base_filepath, name, image_filepath):
 
 def save_geojson(polygons, base_filepath, name=None, image_filepath=None):
     # TODO: add georef and features
-    if name is not None:
-        filepath = base_filepath + "." + name + ".geojson"
-    else:
-        filepath = base_filepath + ".geojson"
+    filepath = get_save_filepath(base_filepath, name, ".geojson")
     polygons_geometry_collection = shapely.geometry.collection.GeometryCollection(polygons)
     geojson = shapely.geometry.mapping(polygons_geometry_collection)
     python_utils.save_json(filepath, geojson)
@@ -195,7 +208,7 @@ def save_poly_coco(annotations: list, base_filepath: str):
     elif type(annotations[0]) == list:
         # Concatenate all lists
         flattened_annotations = list(itertools.chain(*annotations))
-        out_filepath = base_filepath + ".json"
+        out_filepath = get_save_filepath(base_filepath, None, ".json")
         python_utils.save_json(out_filepath, flattened_annotations)
     else:
         raise TypeError("annotations has unrecognized type {}".format(type(annotations)))
@@ -212,7 +225,7 @@ def seg_coco(sample):
         skimage_bbox = contour_props["bbox"]
         obj_mask = seg_mask[skimage_bbox[0]:skimage_bbox[2], skimage_bbox[1]:skimage_bbox[3]]
         obj_seg_interior = seg_interior[skimage_bbox[0]:skimage_bbox[2], skimage_bbox[1]:skimage_bbox[3]]
-        score = float(np.mean(obj_seg_interior[obj_mask]))
+        score = float(np.mean(obj_seg_interior * obj_mask))
 
         coco_bbox = [skimage_bbox[1], skimage_bbox[0],
                      skimage_bbox[3] - skimage_bbox[1], skimage_bbox[2] - skimage_bbox[0]]
@@ -232,7 +245,7 @@ def seg_coco(sample):
 
 
 def save_seg_coco(sample, base_filepath, name):
-    filepath = base_filepath + "." + name + ".json"
+    filepath = get_save_filepath(base_filepath, name, ".json")
     annotations = seg_coco(sample)
     python_utils.save_json(filepath, annotations)
 
@@ -241,7 +254,7 @@ def save_crossfield(crossfield, base_filepath, name):
     # TODO: optimize crossfield disk space
     # Save raw crossfield
     crossfield = np.transpose(crossfield.numpy(), (1, 2, 0))
-    crossfield_filepath = base_filepath + "." + name + ".npy"
+    crossfield_filepath =get_save_filepath(base_filepath, name, ".npy")
     np.save(crossfield_filepath, crossfield)
 
 
@@ -252,16 +265,16 @@ def save_uv_angles(crossfield, base_filepath, name, image_filepath):
     u_angle, v_angle = np.mod(u_angle, np.pi), np.mod(v_angle, np.pi)
     uv_angles = np.stack([u_angle, v_angle], axis=-1)
     uv_angles_as_image = np.round(uv_angles * 255 / np.pi).astype(np.uint8)
-    save_filepath = base_filepath + "." + name + ".tif"
+    save_filepath = get_save_filepath(base_filepath, name, ".tif")
     geo_utils.save_image_as_geotiff(save_filepath, uv_angles_as_image, image_filepath)
 
 
 def save_raw_pred(sample, base_filepath, name):
-    save_filepath = base_filepath + "." + name + ".pt"
+    save_filepath =get_save_filepath(base_filepath, name, ".pt")
     torch.save(sample, save_filepath)
 
 
 def save_opencities_mask(seg_mask, base_filepath, name, image_filepath):
     seg_mask = seg_mask.numpy()
-    out_filepath = base_filepath + "." + name + ".tif"
+    out_filepath = get_save_filepath(base_filepath, name, ".tif")
     tifffile.imwrite(out_filepath, np.logical_not((np.array(seg_mask).astype(np.bool))))

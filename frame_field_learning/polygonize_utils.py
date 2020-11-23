@@ -67,7 +67,7 @@ def compute_geom_prob(geom, prob_map, output_debug=False):
     if isinstance(geom, Iterable):
         return [compute_geom_prob(_geom, prob_map, output_debug=output_debug) for _geom in geom]
     elif isinstance(geom, shapely.geometry.Polygon):
-        # --- Cut with geom bouns:
+        # --- Cut with geom bounds:
         minx, miny, maxx, maxy = geom.bounds
         minx = int(minx)
         miny = int(miny)

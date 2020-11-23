@@ -34,16 +34,27 @@ def main():
 
     stat_names = ["AP", "AP_50", "AP_75", "AP_S", "AP_M", "AP_L", "AR", "AR_50", "AR_75", "AR_S", "AR_M", "AR_L"]
 
-    dirname_list = os.listdir(args.dirpath)
+    dirname_list = next(os.walk(args.dirpath))[1]
     dirname_list = sorted(dirname_list)
+
+    run_file_latex_list = [("Run name", "filename", "Latex")]
+    run_max_len = 0
+    file_max_len = 0
     for dirname in dirname_list:
         dirpath = os.path.join(args.dirpath, dirname)
         in_filename_list = fnmatch.filter(os.listdir(dirpath), "*.stats.*.annotation.*.json")
         in_filename_list = sorted(in_filename_list)
         for in_filename in in_filename_list:
             in_filepath = os.path.join(dirpath, in_filename)
-            string = convert(in_filepath, stat_names)
-            print(dirname[:-len(" | 0000-00-00 00:00:00")], in_filename, string)
+            latex = convert(in_filepath, stat_names)
+            run = dirname[:-len(" | 0000-00-00 00:00:00")]
+            run_file_latex_list.append((run, in_filename, latex))
+            run_max_len = max(run_max_len, len(run))
+            file_max_len = max(file_max_len, len(in_filename))
+
+    # print
+    for run, file, latex in run_file_latex_list:
+        print(run.ljust(run_max_len, ' '), file.ljust(file_max_len, ' '), latex)
 
 
 if __name__ == '__main__':

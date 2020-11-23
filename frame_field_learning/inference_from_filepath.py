@@ -16,7 +16,7 @@ from lydorn_utils import print_utils
 from lydorn_utils import run_utils
 
 
-def inference_from_filepath(config, in_filepaths, backbone):
+def inference_from_filepath(config, in_filepaths, backbone, out_dirpath=None):
     # --- Online transform performed on the device (GPU):
     eval_online_cuda_transform = data_transforms.get_eval_online_cuda_transform(config)
 
@@ -56,18 +56,33 @@ def inference_from_filepath(config, in_filepaths, backbone):
         # Remove batch dim:
         tile_data = local_utils.split_batch(tile_data)[0]
 
+        # --- Saving outputs --- #
+
         pbar.set_postfix(status="Saving output")
-        base_filepath = os.path.splitext(in_filepath)[0]
+
+        # Figuring out_base_filepath out:
+        if out_dirpath is None:
+            out_dirpath = os.path.dirname(in_filepath)
+        base_filename = os.path.splitext(os.path.basename(in_filepath))[0]
+        out_base_filepath = (out_dirpath, base_filename)
+
         if config["compute_seg"]:
-            seg_mask = 0.5 < tile_data["seg"][0]
-            save_utils.save_seg_mask(seg_mask, base_filepath + ".mask", tile_data["image_filepath"])
-            save_utils.save_seg(tile_data["seg"], base_filepath, "seg", tile_data["image_filepath"])
-            save_utils.save_seg_luxcarta_format(tile_data["seg"], base_filepath, "seg_luxcarta_format", tile_data["image_filepath"])
-        if config["compute_crossfield"]:
-            save_utils.save_crossfield(tile_data["crossfield"], base_filepath, "crossfield")
+            if config["eval_params"]["save_individual_outputs"]["seg_mask"]:
+                seg_mask = 0.5 < tile_data["seg"][0]
+                save_utils.save_seg_mask(seg_mask, out_base_filepath, "mask", tile_data["image_filepath"])
+            if config["eval_params"]["save_individual_outputs"]["seg"]:
+                save_utils.save_seg(tile_data["seg"], out_base_filepath, "seg", tile_data["image_filepath"])
+            if config["eval_params"]["save_individual_outputs"]["seg_luxcarta"]:
+                save_utils.save_seg_luxcarta_format(tile_data["seg"], out_base_filepath, "seg_luxcarta_format", tile_data["image_filepath"])
+
+        if config["compute_crossfield"] and config["eval_params"]["save_individual_outputs"]["crossfield"]:
+            save_utils.save_crossfield(tile_data["crossfield"], out_base_filepath, "crossfield")
+
         if "poly_viz" in config["eval_params"]["save_individual_outputs"] and \
                 config["eval_params"]["save_individual_outputs"]["poly_viz"]:
-            save_utils.save_poly_viz(tile_data["image"], tile_data["polygons"], tile_data["polygon_probs"], base_filepath, "poly_viz")
+            save_utils.save_poly_viz(tile_data["image"], tile_data["polygons"], tile_data["polygon_probs"], out_base_filepath, "poly_viz")
+        if config["eval_params"]["save_individual_outputs"]["poly_shapefile"]:
+            save_utils.save_shapefile(tile_data["polygons"], out_base_filepath, "poly_shapefile", tile_data["image_filepath"])
 
         # if config["eval_params"]["save_individual_outputs"]["seg_gt"]:
         #     save_utils.save_seg(tile_data["gt_polygons_image"], base_filepath, "seg.gt", tile_data["image_filepath"])
