@@ -64,12 +64,12 @@ def inference_from_filepath(config, in_filepaths, backbone, out_dirpath=None):
         if out_dirpath is None:
             out_dirpath = os.path.dirname(in_filepath)
         base_filename = os.path.splitext(os.path.basename(in_filepath))[0]
-        out_base_filepath = os.path.join(out_dirpath, base_filename)
+        out_base_filepath = (out_dirpath, base_filename)
 
         if config["compute_seg"]:
             if config["eval_params"]["save_individual_outputs"]["seg_mask"]:
                 seg_mask = 0.5 < tile_data["seg"][0]
-                save_utils.save_seg_mask(seg_mask, out_base_filepath + ".mask", tile_data["image_filepath"])
+                save_utils.save_seg_mask(seg_mask, out_base_filepath, "mask", tile_data["image_filepath"])
             if config["eval_params"]["save_individual_outputs"]["seg"]:
                 save_utils.save_seg(tile_data["seg"], out_base_filepath, "seg", tile_data["image_filepath"])
             if config["eval_params"]["save_individual_outputs"]["seg_luxcarta"]:
