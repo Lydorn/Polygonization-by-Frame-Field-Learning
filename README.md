@@ -113,7 +113,11 @@ You can modify the "data_dir_candidates" list in the config to only include your
 The training script checks this list of paths one at a time and picks the first one that exists. 
 It then appends the "data_root_partial_dirpath" directory to get to the dataset.
 
+You can find some of the data we used in this shared "data" folder: [https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing](https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing).
+
 ## Inria Aerial Image Labeling Dataset
+
+Link to the dataset: [https://project.inria.fr/aerialimagelabeling/](https://project.inria.fr/aerialimagelabeling/)
 
 For the Inria dataset, the original ground truth is just a collection of raster masks. 
 As our method requires annotations to be polygons in order to compute the ground truth angle for the frame field, we made 2 versions of the dataset:
@@ -124,7 +128,7 @@ The *Inria Polygonized dataset* has polygon annotations obtained from using our 
 This was done by running the ```polygonize_mask.py``` script like so:
 ```python polygonize_mask.py --run_name inria_dataset_osm_mask_only.unet16 --filepath ~/data/AerialImageDataset/raw/train/gt/*.tif```
 
-Here is the link to download this new ground truth in both cases: [https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing](https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing).
+You can find this new ground truth for both cases in the shared "data" folder ([https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing](https://drive.google.com/drive/folders/19yqseUsggPEwLFTBl04CmGmzCZAIOYhy?usp=sharing).).
 
 # Running the main.py script
 
