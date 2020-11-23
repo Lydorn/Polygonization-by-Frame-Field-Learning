@@ -44,16 +44,17 @@ def get_args():
 def clean_one(im_data):
     img, dts = im_data
     seg_image = np.zeros((img["height"], img["width"]), dtype=np.float)
-    weights_image = np.zeros((img["height"], img["width"]), dtype=np.float)
+    mask_image = np.zeros((img["height"], img["width"]), dtype=np.uint8)
+
+    # Rank detections by score first
+    dts = sorted(dts, key=lambda k: k['score'], reverse=True)
     for dt in dts:
         if 0 < dt["score"]:
             dt_mask = cocomask.decode(dt["segmentation"])
-            dt_seg = dt_mask * dt["score"]
-            seg_image += dt_seg
-            weights_image += dt_mask
-    weights_image[weights_image == 0] = 1  # Avoid dividing by zero:
-    seg_image /= weights_image  # Avg aggr
-    mask_image = 0.5 < seg_image
+            intersection = mask_image * dt_mask
+            if intersection.sum() == 0:
+                mask_image = np.maximum(mask_image, dt_mask)
+                seg_image = np.maximum(seg_image, dt_mask * dt["score"])
 
     sample = {
         "seg": torch.tensor(seg_image[None, :, :]),
