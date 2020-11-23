@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 import os
-import random
 
 import fiona
 import numpy as np
 import shapely.geometry
 import argparse
-import matplotlib.pyplot as plt
 from multiprocess import Pool
 from functools import partial
 from tqdm import tqdm
@@ -18,7 +16,6 @@ except ImportError:
           "Execute script setup.sh to install local dependencies such as frame_field_learning in develop mode.")
     exit()
 
-from frame_field_learning import plot_utils
 from lydorn_utils import polygon_utils, python_utils, print_utils, geo_utils
 
 
@@ -96,8 +93,8 @@ def eval_one(im_gt_pred_filepath, overwrite=False):
     iou = False
     if not overwrite:
         # Try reading metrics and iou json
-        # metrics = python_utils.load_json(metrics_filepath)  # TODO: uncomment
-        iou = python_utils.load_json(metrics_filepath)
+        metrics = python_utils.load_json(metrics_filepath)
+        iou = python_utils.load_json(iou_filepath)
 
     if not metrics or not iou:
         # Have to compute at least one so load geometries
@@ -107,19 +104,18 @@ def eval_one(im_gt_pred_filepath, overwrite=False):
         pred_polygons = load_geom(pred_filepath, im_filepath)
         fixed_pred_polygons = polygon_utils.fix_polygons(pred_polygons)
 
-        # TODO: uncomment:
-        # if not metrics:
-        #     # Compute and save metrics
-        #     max_angle_diffs = polygon_utils.compute_polygon_contour_measures(fixed_pred_polygons, fixed_gt_polygons,
-        #                                                                      sampling_spacing=1.0, min_precision=0.5,
-        #                                                                      max_stretch=2, progressbar=True)
-        #     max_angle_diffs = [value for value in max_angle_diffs if value is not None]
-        #     max_angle_diffs = np.array(max_angle_diffs)
-        #     max_angle_diffs = max_angle_diffs * 180 / np.pi  # Convert to degrees
-        #     metrics = {
-        #         "max_angle_diffs": list(max_angle_diffs)
-        #     }
-        #     python_utils.save_json(metrics_filepath, metrics)
+        if not metrics:
+            # Compute and save metrics
+            max_angle_diffs = polygon_utils.compute_polygon_contour_measures(fixed_pred_polygons, fixed_gt_polygons,
+                                                                             sampling_spacing=1.0, min_precision=0.5,
+                                                                             max_stretch=2, progressbar=True)
+            max_angle_diffs = [value for value in max_angle_diffs if value is not None]
+            max_angle_diffs = np.array(max_angle_diffs)
+            max_angle_diffs = max_angle_diffs * 180 / np.pi  # Convert to degrees
+            metrics = {
+                "max_angle_diffs": list(max_angle_diffs)
+            }
+            python_utils.save_json(metrics_filepath, metrics)
 
         if not iou:
             fixed_gt_polygon_collection = shapely.geometry.collection.GeometryCollection(fixed_gt_polygons)
@@ -148,26 +144,26 @@ def main():
     pool = Pool()
     metrics_iou_list = list(tqdm(pool.imap(partial(eval_one, overwrite=args.overwrite), im_gt_pred_filepaths), desc="Compute eval metrics", total=len(im_gt_pred_filepaths)))
 
-    # # Aggregate metrics and IoU
-    # aggr_metrics = {
-    #     "max_angle_diffs": []
-    # }
-    # aggr_iou = {
-    #     "intersection": 0,
-    #     "union": 0
-    # }
-    # for metrics, iou in metrics_iou_list:
-    #     if metrics:
-    #         aggr_metrics["max_angle_diffs"] += metrics["max_angle_diffs"]
-    #     if iou:
-    #         aggr_iou["intersection"] += iou["intersection"]
-    #         aggr_iou["union"] += iou["union"]
-    # aggr_iou["iou"] = aggr_iou["intersection"] / aggr_iou["union"]
-    #
-    # aggr_metrics_filepath = os.path.join(os.path.dirname(args.pred_filepath[0]), "aggr_metrics.json")
-    # aggr_iou_filepath = os.path.join(os.path.dirname(args.pred_filepath[0]), "aggr_iou.json")
-    # python_utils.save_json(aggr_metrics_filepath, aggr_metrics)
-    # python_utils.save_json(aggr_iou_filepath, aggr_iou)
+    # Aggregate metrics and IoU
+    aggr_metrics = {
+        "max_angle_diffs": []
+    }
+    aggr_iou = {
+        "intersection": 0,
+        "union": 0
+    }
+    for metrics_iou in metrics_iou_list:
+        if metrics_iou["metrics"]:
+            aggr_metrics["max_angle_diffs"] += metrics_iou["metrics"]["max_angle_diffs"]
+        if metrics_iou["iou"]:
+            aggr_iou["intersection"] += metrics_iou["iou"]["intersection"]
+            aggr_iou["union"] += metrics_iou["iou"]["union"]
+    aggr_iou["iou"] = aggr_iou["intersection"] / aggr_iou["union"]
+
+    aggr_metrics_filepath = os.path.join(os.path.dirname(args.pred_filepath[0]), "aggr_metrics.json")
+    aggr_iou_filepath = os.path.join(os.path.dirname(args.pred_filepath[0]), "aggr_iou.json")
+    python_utils.save_json(aggr_metrics_filepath, aggr_metrics)
+    python_utils.save_json(aggr_iou_filepath, aggr_iou)
 
 
 if __name__ == '__main__':
