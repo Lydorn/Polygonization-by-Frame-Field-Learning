@@ -1,17 +1,23 @@
 import argparse
 
+import os
+import torch
+
 import numpy as np
 import skimage
 import skimage.measure
 import skimage.io
 import shapely.geometry
 import shapely.ops
+from PIL import Image
+from multiprocess import Pool
+from tqdm import tqdm
 
 from functools import partial
 
-from lydorn_utils import print_utils
+from lydorn_utils import print_utils, geo_utils
 
-from frame_field_learning import polygonize_utils
+from frame_field_learning import polygonize_utils, plot_utils
 
 DEBUG = False
 
@@ -26,17 +32,33 @@ def get_args():
     argparser.add_argument(
         '--seg_filepath',
         required=True,
+        nargs='*',
         type=str,
-        help='Filepath to input segmentation image.')
+        help='Filepath(s) to input segmentation/mask image.')
     argparser.add_argument(
-        '--im_filepath',
+        '--im_dirpath',
+        required=True,
         type=str,
-        help='Filepath to input image.')
+        help='Path to the directory containing the corresponding images os the segmentation/mask. '
+             'Files must have the same filename as --seg_filepath.'
+             'Used for vizualization or saving the shapefile with the same coordinate system as that image.')
+    argparser.add_argument(
+        '--out_dirpath',
+        required=True,
+        type=str,
+        help='Path to the output directory.')
+    argparser.add_argument(
+        '--out_ext',
+        type=str,
+        default="shp",
+        choices=['pdf', 'shp'],
+        help="File extension of the output. "
+             "'pdf': pdf visualization (requires --im_dirpath for the image),  'shp': shapefile")
     argparser.add_argument(
         '--bbox',
         nargs='*',
         type=int,
-        help='Selects area in bbox for computation')
+        help='Selects area in bbox for computation.')
 
     args = argparser.parse_args()
     return args
@@ -143,11 +165,58 @@ def polygonize(seg_batch, config, pool=None, pre_computed=None):
     return polygons_batch, probs_batch
 
 
-def main():
-    from frame_field_learning import plot_utils
-    import os
-    import torch
+def run_one(seg_filepath, out_dirpath, config, im_dirpath, out_ext=None, bbox=None):
+    filename = os.path.basename(seg_filepath)
+    name = os.path.splitext(filename)[0]
 
+    # Load image
+    image = None
+    im_filepath = os.path.join(im_dirpath, name + ".tif")
+    if out_ext == "pdf":
+        image = skimage.io.imread(im_filepath)
+
+    # seg = skimage.io.imread(seg_filepath) / 255
+    seg_img = Image.open(seg_filepath)
+    seg = np.array(seg_img)
+    if seg.dtype == np.uint8:
+        seg = seg / 255
+    elif seg.dtype == np.bool:
+        seg = seg.astype(np.float)
+
+    # Select bbox for dev
+    if bbox is not None:
+        assert len(bbox) == 4, "bbox should have 4 values"
+        # bbox = [1440, 210, 1800, 650]  # vienna12
+        # bbox = [2808, 2393, 3124, 2772]  # innsbruck19
+        if image is not None:
+            image = image[bbox[0]:bbox[2], bbox[1]:bbox[3]]
+        seg = seg[bbox[0]:bbox[2], bbox[1]:bbox[3]]
+        extra_name = ".bbox_{}_{}_{}_{}".format(*bbox)
+    else:
+        extra_name = ""
+
+    # Convert to torch and add batch dim
+    if len(seg.shape) < 3:
+        seg = seg[:, :, None]
+    seg_batch = torch.tensor(np.transpose(seg[:, :, :2], (2, 0, 1)), dtype=torch.float)[None, ...]
+
+    out_contours_batch, out_probs_batch = polygonize(seg_batch, config)
+
+    polygons = out_contours_batch[0]
+
+    if out_ext == "shp":
+        out_filepath = os.path.join(out_dirpath, name + ".shp")
+        geo_utils.save_shapefile_from_shapely_polygons(polygons, im_filepath, out_filepath)
+    elif out_ext == "pdf":
+        base_filepath = os.path.splitext(seg_filepath)[0]
+        filepath = base_filepath + extra_name + ".poly_simple.pdf"
+        # plot_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
+        plot_utils.save_poly_viz(image, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
+    else:
+        raise ValueError(f"out_ext should be shp or pdf, not {out_ext}")
+
+
+def main():
     config = {
         "data_level": 0.5,
         "tolerance": 1.0,
@@ -157,40 +226,8 @@ def main():
     # --- Process args --- #
     args = get_args()
 
-    # Load image
-    image = None
-    if args.im_filepath:
-        image = skimage.io.imread(args.im_filepath)
-
-    # Load seg (or mask)
-    if args.seg_filepath:
-        seg = skimage.io.imread(args.seg_filepath) / 255
-
-        # Select bbox for dev
-        if args.bbox is not None:
-            assert len(args.bbox) == 4, "bbox should have 4 values"
-            bbox = args.bbox
-            # bbox = [1440, 210, 1800, 650]  # vienna12
-            # bbox = [2808, 2393, 3124, 2772]  # innsbruck19
-            image = image[bbox[0]:bbox[2], bbox[1]:bbox[3]]
-            seg = seg[bbox[0]:bbox[2], bbox[1]:bbox[3]]
-            extra_name = ".bbox_{}_{}_{}_{}".format(*bbox)
-        else:
-            extra_name = ""
-
-        # Convert to torch and add batch dim
-        if len(seg.shape) < 3:
-            seg = seg[:, :, None]
-        seg_batch = torch.tensor(np.transpose(seg[:, :, :2], (2, 0, 1)), dtype=torch.float)[None, ...]
-
-        out_contours_batch, out_probs_batch = polygonize(seg_batch, config)
-
-        polygons = out_contours_batch[0]
-
-        base_filepath = os.path.splitext(args.seg_filepath)[0]
-        filepath = base_filepath + extra_name + ".poly_simple.pdf"
-        # plot_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
-        plot_utils.save_poly_viz(image, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
+    pool = Pool()
+    list(tqdm(pool.imap(partial(run_one, out_dirpath=args.out_dirpath, config=config, im_dirpath=args.im_dirpath, out_ext=args.out_ext, bbox=args.bbox), args.seg_filepath), desc="Simple poly.", total=len(args.seg_filepath)))
 
 
 if __name__ == '__main__':
