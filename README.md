@@ -75,6 +75,14 @@ Once the docker container is built and launched, execute the [setup.sh](setup.sh
 
 The environment in the container is now ready for use.
 
+## Conda environment
+
+Alternatively you can install all dependencies in a conda environment. 
+I provide my environment specifications in the  [environment.yml](environment.yml) which you can use to create your environment own with: 
+```
+conda env create -f environment.yml
+```
+
 # Data
 
 Several datasets are used in this work. 
