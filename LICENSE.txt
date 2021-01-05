@@ -1,7 +1,7 @@
 ***
 CONTRAT DE LICENCE DE LOGICIEL
 
-Logiciel MAPALIGNMENT ©Inria 2018, tout droit réservé, ci-après dénommé "le Logiciel".
+Logiciel PFFL ©Inria 2020, tout droit réservé, ci-après dénommé "le Logiciel".
 
 Le Logiciel a été conçu et réalisé par des chercheurs de l’équipe-projet TITANE d’Inria (Institut National de Recherche en Informatique et Automatique).
 
@@ -49,7 +49,7 @@ SAUF LORSQU'EXPLICITEMENT PRÉVU PAR LA LOI, INRIA NE POURRA ÊTRE TENU POUR RES
 SOFTWARE LICENSE AGREEMENT
 
 
-Software MAPALIGNMENT ©Inria – 2018, all rights reserved, hereinafter "the Software".
+Software PFFL ©Inria – 2020, all rights reserved, hereinafter "the Software".
 
 This software has been developed by researchers of TITANE project team of Inria (Institut National de Recherche en Informatique et Automatique).
 
