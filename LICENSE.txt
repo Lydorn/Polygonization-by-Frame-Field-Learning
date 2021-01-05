@@ -34,7 +34,7 @@ Si le Logiciel est utilisé pour la publication de résultats, l’utilisateur d
 }
 
 
-Tout utilisateur du Logiciel pourra communiquer ses remarques d'utilisation du Logiciel aux développeurs de MAPALIGNMENT : nicolas.girard@inria.fr
+Tout utilisateur du Logiciel pourra communiquer ses remarques d'utilisation du Logiciel aux développeurs de PFFL : nicolas.girard@inria.fr
 
 
 L'UTILISATEUR NE PEUT FAIRE NI UTILISATION NI EXPLOITATION NI DISTRIBUTION COMMERCIALE DU LOGICIEL SANS L'ACCORD EXPRÈS PRÉALABLE d’INRIA (stip-sam@inria.fr).
@@ -83,7 +83,7 @@ In case of using the Software for a publication or other results obtained throug
 }
 
 
-Every user of the Software could communicate to the developers of MAPALIGNMENT [nicolas.girard@inria.fr] his or her remarks as to the use of the Software.
+Every user of the Software could communicate to the developers of PFFL [nicolas.girard@inria.fr] his or her remarks as to the use of the Software.
 
 THE USER CANNOT USE, EXPLOIT OR COMMERCIALY DISTRIBUTE THE SOFTWARE WITHOUT PRIOR AND EXPLICIT CONSENT OF INRIA (stip-sam@inria.fr). ANY SUCH ACTION WILL CONSTITUTE A FORGERY.
 
