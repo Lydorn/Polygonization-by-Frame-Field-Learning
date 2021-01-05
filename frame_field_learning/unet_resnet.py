@@ -1,8 +1,3 @@
-# ---#
-#
-# Initial code from https://github.com/neptune-ai/open-solution-mapping-challenge/blob/master/src/unet_models.py
-#
-# ---
 from collections import OrderedDict
 from torch import nn
 from torch.nn import functional as F
@@ -23,7 +18,6 @@ class ConvRelu(nn.Module):
     def forward(self, x):
         x = self.conv(x)
         x = self.activation(x)
-        print("ConvRelu:", x.shape, x.min().item(), x.max().item())
         return x
 
 
@@ -34,8 +28,8 @@ class DecoderBlockV2(nn.Module):
 
         if is_deconv:
             """
-                Paramaters for Deconvolution were chosen to avoid artifacts, following
-                link https://distill.pub/2016/deconv-checkerboard/
+            Parameters for Deconvolution were chosen to avoid artifacts, following
+            link https://distill.pub/2016/deconv-checkerboard/
             """
 
             self.block = nn.Sequential(
@@ -107,7 +101,7 @@ class UNetResNetBackbone(nn.Module):
             self.encoder = torchvision.models.resnet152(pretrained=pretrained)
             bottom_channel_nr = 2048
         else:
-            raise NotImplementedError('only 34, 101, 152 version of Resnet are implemented')
+            raise NotImplementedError('only 34, 101, 152 version of ResNet are implemented')
 
         self.pool = nn.MaxPool2d(2, 2)
 
@@ -137,37 +131,23 @@ class UNetResNetBackbone(nn.Module):
         self.dec1 = DecoderBlockV2(num_filters * 2 * 2, num_filters * 2 * 2, num_filters, is_deconv)
 
     def forward(self, x):
-        # print("x:", x.shape, x.min().item(), x.max().item())
         conv1 = self.conv1(x)
-        # print("conv1:", conv1.shape, conv1.min().item(), conv1.max().item())
         conv2 = self.conv2(conv1)
-        # print("conv2:", conv2.shape, conv2.min().item(), conv2.max().item())
         conv3 = self.conv3(conv2)
-        # print("conv3:", conv3.shape, conv3.min().item(), conv3.max().item())
         conv4 = self.conv4(conv3)
-        # print("conv4:", conv4.shape, conv4.min().item(), conv4.max().item())
         conv5 = self.conv5(conv4)
-        # print("conv5:", conv5.shape, conv5.min().item(), conv5.max().item())
 
         pool = self.pool(conv5)
-        # print("pool:", pool.shape, pool.min().item(), pool.max().item())
         center = self.center(pool)
-        # print("center:", center.shape, center.min().item(), center.max().item())
 
         dec5 = self.dec5(cat_non_matching(conv5, center))
-        # print("center:", center.shape, center.min().item(), center.max().item())
 
         dec4 = self.dec4(cat_non_matching(conv4, dec5))
-        # print("dec4:", dec4.shape, dec4.min().item(), dec4.max().item())
         dec3 = self.dec3(cat_non_matching(conv3, dec4))
-        # print("dec3:", dec3.shape, dec3.min().item(), dec3.max().item())
         dec2 = self.dec2(cat_non_matching(conv2, dec3))
-        # print("dec2:", dec2.shape, dec2.min().item(), dec2.max().item())
         dec1 = self.dec1(dec2)
-        # print("dec1:", dec1.shape, dec1.min().item(), dec1.max().item())
 
         y = F.dropout2d(dec1, p=self.dropout_2d)
-        # print("y:", y.shape, y.min().item(), y.max().item())
 
         result = OrderedDict()
         result["out"] = y
