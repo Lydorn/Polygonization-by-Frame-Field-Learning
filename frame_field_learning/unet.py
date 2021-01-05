@@ -1,14 +1,8 @@
-# ---
-#
-# Initial code from https://github.com/milesial/Pytorch-UNet
-#
-# ---
 from collections import OrderedDict
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-# from pytorch_memlab import profile, profile_every
 
 
 class UNetBackbone(nn.Module):
@@ -20,10 +14,6 @@ class UNetBackbone(nn.Module):
         self.down2 = Down(n_hidden_base*2, n_hidden_base*4, no_padding)
         self.down3 = Down(n_hidden_base*4, n_hidden_base*8, no_padding)
         self.down4 = Down(n_hidden_base*8, n_hidden_base*16, no_padding)
-        # self.up1 = Up(n_hidden_base*24, n_hidden_base*8, no_padding)
-        # self.up2 = Up(n_hidden_base*12, n_hidden_base*4, no_padding)
-        # self.up3 = Up(n_hidden_base*6, n_hidden_base*2, no_padding)
-        # self.up4 = Up(n_hidden_base*3, n_hidden_base, no_padding)
 
         self.up1 = Up(n_hidden_base*16, n_hidden_base*8, n_hidden_base*8, no_padding)
         self.up2 = Up(n_hidden_base*8, n_hidden_base*4, n_hidden_base*4, no_padding)
@@ -61,7 +51,6 @@ class DoubleConv(nn.Module):
             nn.ELU()
         )
 
-    # @profile
     def forward(self, x):
         x = self.conv(x)
         return x
@@ -93,14 +82,10 @@ class Down(nn.Module):
 class Up(nn.Module):
     def __init__(self, in_ch_1, in_ch_2, out_ch, no_padding):
         super(Up, self).__init__()
-        # self.upsample = nn.ConvTranspose2d(in_ch_1, in_ch_2, 3, stride=2, padding=1)
         self.conv = DoubleConv(in_ch_1 + in_ch_2, out_ch, no_padding)
 
     def forward(self, x1, x2):
-        # print("--- Up ---")
         x1 = F.interpolate(x1, scale_factor=2, mode='bilinear', align_corners=False)
-        # upsample_shape = [x1.shape[0], x2.shape[1], 2*x1.shape[2], 2*x1.shape[3]]
-        # x1 = self.upsample(x1, output_size=upsample_shape)
 
         # input is CHW
         diffY = x2.size()[2] - x1.size()[2]
@@ -108,10 +93,6 @@ class Up(nn.Module):
 
         x1 = F.pad(x1, [diffX // 2, diffX - diffX // 2,
                         diffY // 2, diffY - diffY // 2])
-
-        # for padding issues, see
-        # https://github.com/HaiyongJiang/U-Net-Pytorch-Unstructured-Buggy/commit/0e854509c2cea854e247a9c615f175f76fbb2e3a
-        # https://github.com/xiaopeng-liao/Pytorch-UNet/commit/8ebac70e633bac59fc22bb5195e513d5832fb3bd
 
         x = torch.cat([x2, x1], dim=1)
         x = self.conv.forward(x)
