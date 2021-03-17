@@ -1,8 +1,8 @@
 [submodule "lydorn_utils"]
 	path = lydorn_utils
-	url = git@github.com:Lydorn/lydorn_utils.git
+	url = https://github.com/Lydorn/lydorn_utils.git
 	branch = master
 [submodule "pytorch_lydorn"]
 	path = pytorch_lydorn
-	url = git@github.com:Lydorn/pytorch_lydorn.git
+	url = https://github.com/Lydorn/pytorch_lydorn.git
 	branch = master
