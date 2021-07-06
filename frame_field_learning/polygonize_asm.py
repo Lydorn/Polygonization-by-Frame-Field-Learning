@@ -1,6 +1,7 @@
 import argparse
 import fnmatch
 import functools
+import glob
 import time
 from typing import List
 
@@ -21,7 +22,7 @@ from functools import partial
 import torch
 import torch_scatter
 
-from frame_field_learning import polygonize_utils, plot_utils, frame_field_utils
+from frame_field_learning import polygonize_utils, plot_utils, frame_field_utils, save_utils
 
 from torch_lydorn.torch.nn.functionnal import bilinear_interpolate
 from torch_lydorn.torchvision.transforms import Paths, Skeleton, TensorSkeleton, skeletons_to_tensorskeleton, tensorskeleton_to_skeletons
@@ -54,6 +55,10 @@ def get_args():
         '--seg_filepath',
         type=str,
         help='Filepath to input segmentation image.')
+    argparser.add_argument(
+        '--angles_map_filepath',
+        type=str,
+        help='Filepath to frame field angles map.')
     argparser.add_argument(
         '--dirpath',
         type=str,
@@ -334,8 +339,10 @@ class AlignLoss:
         junction_coef = float(self.junction_coef_interp(iter_num))
         # total_loss = data_coef * level_loss + length_coef * total_length_loss + crossfield_coef * total_align_loss + \
         #              curvature_coef * total_curvature_loss + corner_coef * total_corner_loss + junction_coef * total_junction_loss
-        total_loss = data_coef * level_loss + length_coef * total_length_loss + crossfield_coef * total_align_loss + \
-                     curvature_coef * total_curvature_loss + corner_coef * total_corner_loss + junction_coef * total_junction_loss
+        # total_loss = data_coef * level_loss + length_coef * total_length_loss + crossfield_coef * total_align_loss + \
+        #              curvature_coef * total_curvature_loss + corner_coef * total_corner_loss + junction_coef * total_junction_loss
+        # TODO: Debug adding curvature_coef * total_curvature_loss + corner_coef * total_corner_loss + junction_coef * total_junction_loss
+        total_loss = data_coef * level_loss + length_coef * total_length_loss + crossfield_coef * total_align_loss
 
         # print(iter_num)
         # input("<Enter>...")
@@ -856,7 +863,7 @@ def polygonize(seg_batch, crossfield_batch, config, pool=None, pre_computed=None
 
 
 def main():
-    from frame_field_learning import framefield, inference
+    from frame_field_learning import inference
     import os
 
     def save_gt_poly(raw_pred_filepath, name):
@@ -968,12 +975,98 @@ def main():
         # save_utils.save_geojson(polygons, base_filepath + extra_name, name="poly_asm", image_filepath=args.im_filepath)
 
         # Save shapefile
-        # save_utils.save_shapefile(polygons, base_filepath + extra_name, "poly_asm", args.im_filepath)
+        save_utils.save_shapefile(polygons, base_filepath + extra_name, "poly_asm", args.im_filepath)
 
         # Save pdf viz
         filepath = base_filepath + extra_name + ".poly_asm.pdf"
         # plot_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
         plot_utils.save_poly_viz(image, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
+    elif args.seg_filepath is not None and args.angles_map_filepath is not None:
+        total_t1 = time.time()
+        print("Loading data in image format")
+        seg_filepaths = sorted(glob.glob(args.seg_filepath))
+        angles_map_filepaths = sorted(glob.glob(args.angles_map_filepath))
+        assert len(seg_filepaths) == len(angles_map_filepaths)
+
+        for seg_filepath, angles_map_filepath in zip(seg_filepaths, angles_map_filepaths):
+            print("Running on:", seg_filepath, angles_map_filepath)
+            base_filepath = os.path.splitext(seg_filepath)[0]
+            # --- Load seg (or prob map) and frame field angles from file
+            config = {
+                "init_method": "skeleton",  # Can be either skeleton or marching_squares
+                "data_level": 0.5,
+                "loss_params": {
+                    "coefs": {
+                        "step_thresholds": [0, 100, 200],  # From 0 to 500: gradually go from coefs[0] to coefs[1]
+                        "data": [1.0, 0.1, 0.0],
+                        "crossfield": [0.0, 0.05, 0.0],
+                        "length": [0.1, 0.01, 0.0],
+                        "curvature": [0.0, 0.0, 0.0],
+                        "corner": [0.0, 0.0, 0.0],
+                        "junction": [0.0, 0.0, 0.0],
+                    },
+                    "curvature_dissimilarity_threshold": 2,
+                    # In pixels: for each sub-paths, if the dissimilarity (in the same sense as in the Ramer-Douglas-Peucker alg) is lower than curvature_dissimilarity_threshold, then optimize the curve angles to be zero.
+                    "corner_angles": [45, 90, 135],  # In degrees: target angles for corners.
+                    "corner_angle_threshold": 22.5,
+                    # If a corner angle is less than this threshold away from any angle in corner_angles, optimize it.
+                    "junction_angles": [0, 45, 90, 135],  # In degrees: target angles for junction corners.
+                    "junction_angle_weights": [1, 0.01, 0.1, 0.01],
+                    # Order of decreassing importance: straight, right-angle, then 45° junction corners.
+                    "junction_angle_threshold": 22.5,
+                    # If a junction corner angle is less than this threshold away from any angle in junction_angles, optimize it.
+                },
+                "lr": 0.1,
+                "gamma": 0.995,
+                "device": "cuda",
+                "tolerance": 1.0,
+                "seg_threshold": 0.5,
+                "min_area": 10,
+            }
+            input_seg = skimage.io.imread(seg_filepath) / 255
+            seg = input_seg[:, :, [1, 2]]  # LuxCarta channels are (background, interior, wall), re-arrange to be (interior, wall)
+            angles_map = np.pi * skimage.io.imread(angles_map_filepath) / 255
+
+            t1 = time.time()
+
+            u_angle = angles_map[:, :, 0]
+            v_angle = angles_map[:, :, 1]
+            u = np.cos(u_angle) - 1j * np.sin(u_angle)  # y-axis inverted
+            v = np.cos(v_angle) - 1j * np.sin(v_angle)  # y-axis inverted
+            crossfield = math_utils.compute_crossfield_c0c2(u, v)
+
+            # Convert to torch and add batch dim
+            seg_batch = torch.tensor(np.transpose(seg[:, :, :2], (2, 0, 1)), dtype=torch.float)[None, ...]
+            crossfield_batch = torch.tensor(np.transpose(crossfield, (2, 0, 1)), dtype=torch.float)[None, ...]
+
+            # # Add samples to batch to increase batch size for testing
+            # batch_size = 4
+            # seg_batch = seg_batch.repeat((batch_size, 1, 1, 1))
+            # crossfield_batch = crossfield_batch.repeat((batch_size, 1, 1, 1))
+
+            try:
+                out_contours_batch, out_probs_batch = polygonize(seg_batch, crossfield_batch, config)
+
+                t2 = time.time()
+
+                print(f"Time: {t2 - t1:02f}s")
+
+                polygons = out_contours_batch[0]
+
+                # Save geojson
+                # save_utils.save_geojson(polygons, base_filepath + extra_name, name="poly_asm", image_filepath=args.im_filepath)
+
+                # Save shapefile
+                save_utils.save_shapefile(polygons, base_filepath, "poly_asm", seg_filepath)
+
+                # # Save pdf viz
+                # filepath = base_filepath + ".poly_asm.pdf"
+                # # plot_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
+                # plot_utils.save_poly_viz(input_seg, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
+            except ValueError as e:
+                print("ERROR:", e)
+            total_t2 = time.time()
+            print(f"Total time: {total_t2 - total_t1:02f}s")
     elif args.dirpath:
         seg_filename_list = fnmatch.filter(os.listdir(args.dirpath), "*.seg.tif")
         sorted(seg_filename_list)
