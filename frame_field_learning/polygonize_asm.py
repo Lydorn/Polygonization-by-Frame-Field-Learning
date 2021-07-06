@@ -1065,8 +1065,8 @@ def main():
                 # plot_utils.save_poly_viz(input_seg, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
             except ValueError as e:
                 print("ERROR:", e)
-            total_t2 = time.time()
-            print(f"Total time: {total_t2 - total_t1:02f}s")
+        total_t2 = time.time()
+        print(f"Total time: {total_t2 - total_t1:02f}s")
     elif args.dirpath:
         seg_filename_list = fnmatch.filter(os.listdir(args.dirpath), "*.seg.tif")
         sorted(seg_filename_list)
