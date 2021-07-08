@@ -33,17 +33,8 @@ This repository contains the official code for the paper:
 [Dmitriy Smirnov](https://people.csail.mit.edu/smirnov/),
 [Justin Solomon](https://people.csail.mit.edu/jsolomon/),
 [Yuliya Tarabalka](https://www-sop.inria.fr/members/Yuliya.Tarabalka/)\
-Pre-print\
-**\[[paper](https://arxiv.org/pdf/2004.14875.pdf), [video](https://www.youtube.com/watch?v=XdQMD3HTYCU&t=5s)\]**
-
-Whose short version has been published as:
-
-**Regularized Building Segmentation by Frame Field Learning**\
-[Nicolas Girard](https://www-sop.inria.fr/members/Nicolas.Girard/),
-[Dmitriy Smirnov](https://people.csail.mit.edu/smirnov/),
-[Justin Solomon](https://people.csail.mit.edu/jsolomon/),
-[Yuliya Tarabalka](https://www-sop.inria.fr/members/Yuliya.Tarabalka/)\
-IGARSS 2020
+CVPR 2021\
+**\[[paper](https://arxiv.org/abs/2004.14875), [video](https://www.youtube.com/watch?v=226pPTBsNJ8&t=8s)\]**
 
 # Setup
 
@@ -212,21 +203,12 @@ Because Google Drive reformats folder names, you have to rename the run folders 
 If you use this code for your own research, please cite
 
 ```
-@InProceedings{Girard_2020_IGARSS,
-  title = {{Regularized Building Segmentation by Frame Field Learning}},
-  author = {Girard, Nicolas and Smirnov, Dmitriy and Solomon, Justin and Tarabalka, Yuliya},
-  booktitle = {IEEE International Geoscience and Remote Sensing Symposium (IGARSS)},
-  ADDRESS = {Waikoloa, Hawaii},
-  year = {2020},
-  month = Jul,
-}
-
-@misc{girard2020polygonal,
-    title={Polygonal Building Segmentation by Frame Field Learning},
-    author={Nicolas Girard and Dmitriy Smirnov and Justin Solomon and Yuliya Tarabalka},
-    year={2020},
-    eprint={2004.14875},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV}
+@InProceedings{Girard_2021_CVPR,
+    author    = {Girard, Nicolas and Smirnov, Dmitriy and Solomon, Justin and Tarabalka, Yuliya},
+    title     = {Polygonal Building Extraction by Frame Field Learning},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2021},
+    pages     = {5891-5900}
 }
 ```
