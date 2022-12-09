@@ -58,9 +58,15 @@ git submodule update --recursive
 
 For more about explanations about using submodules and git, see [SUBMODULES.md](SUBMODULES.md).
 
+## Venv
+
+As of 2022-12, venv is probably the best solution to install a virtual environment with all required 
+dependencies using the provided [requirements.txt](requirements.txt). I use Python 3.10 and PyTorch 1.13.
+
 ## Docker
 
-The easiest way to setup environment is to use the Docker image provided in the [docker](docker) (see README inside the folder).
+OLD SOLUTION: use the old Docker image I provide here: [docker](docker) (see README inside the folder).
+However, it builds an old environment not guaranteed to work with the updated code.
 
 Once the docker container is built and launched, execute the [setup.sh](setup.sh) script inside to install required packages.
 
@@ -68,7 +74,7 @@ The environment in the container is now ready for use.
 
 ## Conda environment
 
-Alternatively you can install all dependencies in a conda environment. 
+OLD SOLUTION: install all dependencies in a conda environment. 
 I provide my environment specifications in the  [environment.yml](environment.yml) which you can use to create your environment own with: 
 ```
 conda env create -f environment.yml

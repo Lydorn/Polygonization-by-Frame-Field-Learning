@@ -1,5 +1,24 @@
-# Install lydorn_utils as development mode
--e ./lydorn_utils # Path to the submodule
-
-# Install torch_lydorn as development mode
--e ./pytorch_lydorn # Path to the submodule
+descartes
+fiona
+geojson
+jsmin
+kornia
+lydorn_utils
+matplotlib
+multiprocess
+numpy
+opencv-python
+overpy
+pycocotools
+pyproj
+rasterio
+scikit-image
+scikit-learn
+shapely
+skan
+tensorboard
+torch
+torch_lydorn
+torch_scatter
+torchvision
+tqdm
