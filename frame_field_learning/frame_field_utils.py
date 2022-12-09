@@ -45,8 +45,8 @@ def c0c2_to_uv(c0c2: torch.Tensor) -> torch.Tensor:
     c2_squared = complex_mul(c2, c2, complex_dim=1)
     c2_squared_minus_4c0 = c2_squared - 4 * c0
     sqrt_c2_squared_minus_4c0 = complex_sqrt(c2_squared_minus_4c0, complex_dim=1)
-    u_squared = (c2 + sqrt_c2_squared_minus_4c0) / 2
-    v_squared = (c2 - sqrt_c2_squared_minus_4c0) / 2
+    u_squared = - (c2 + sqrt_c2_squared_minus_4c0) / 2
+    v_squared = - (c2 - sqrt_c2_squared_minus_4c0) / 2
     uv_squared = torch.stack([u_squared, v_squared], dim=1)  # Shape (B, 'uv': 2, 'complex': 2, H, W)
     uv = complex_sqrt(uv_squared, complex_dim=2)
     return uv
