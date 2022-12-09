@@ -16,8 +16,7 @@ from functools import partial
 
 import torch
 
-from frame_field_learning import polygonize_utils
-from frame_field_learning import frame_field_utils
+from frame_field_learning import polygonize_utils, plot_utils, frame_field_utils
 
 from torch_lydorn.torch.nn.functionnal import bilinear_interpolate
 from torch_lydorn.torchvision.transforms import polygons_to_tensorpoly, tensorpoly_pad
@@ -46,6 +45,14 @@ def get_args():
         '--im_filepath',
         type=str,
         help='Filepath to input image. Will retrieve seg and crossfield in the same directory')
+    argparser.add_argument(
+        '--seg_filepath',
+        type=str,
+        help='Filepath to input segmentation image.')
+    argparser.add_argument(
+        '--framefield_filepath',
+        type=str,
+        help='Filepath to frame field coefs.')
     argparser.add_argument(
         '--dirpath',
         type=str,
@@ -416,7 +423,7 @@ def polygonize(seg_batch, crossfield_batch, config, pool=None, pre_computed=None
 
 
 def main():
-    from frame_field_learning import framefield, inference
+    from frame_field_learning import inference
     import os
 
     def save_gt_poly(raw_pred_filepath, name):
@@ -485,6 +492,39 @@ def main():
 
             # Load gt polygons
             save_gt_poly(raw_pred_filepath, name)
+    elif args.seg_filepath is not None and args.framefield_filepath is not None:
+        print("Loading data in raw format")
+
+        base_filepath = os.path.splitext(args.seg_filepath)[0]
+
+        seg = skimage.io.imread(args.seg_filepath) / 255
+        framefield_coefs = np.load(args.framefield_filepath)
+
+        if args.bbox is not None:
+            assert len(args.bbox) == 4, "bbox should have 4 values"
+            bbox = args.bbox
+            seg = seg[bbox[0]:bbox[2], bbox[1]:bbox[3]]
+            framefield_coefs = framefield_coefs[bbox[0]:bbox[2], bbox[1]:bbox[3]]
+
+        # Convert to torch and add batch dim
+        seg_batch = torch.tensor(np.transpose(seg[:, :, :2], (2, 0, 1)), dtype=torch.float)[None, ...]
+        crossfield_batch = torch.tensor(np.transpose(framefield_coefs, (2, 0, 1)), dtype=torch.float)[None, ...]
+
+        # # Add samples to batch to increase batch size for testing
+        # batch_size = 4
+        # seg_batch = seg_batch.repeat((batch_size, 1, 1, 1))
+        # crossfield_batch = crossfield_batch.repeat((batch_size, 1, 1, 1))
+
+        try:
+            out_contours_batch, out_probs_batch = polygonize(seg_batch, crossfield_batch, config)
+
+            polygons = out_contours_batch[0]
+
+            # Save pdf viz
+            filepath = base_filepath + ".poly_acm.pdf"
+            plot_utils.save_poly_viz(seg, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
+        except ValueError as e:
+            print("ERROR:", e)
     elif args.im_filepath:
         # Load from filepath, look for seg and crossfield next to the image
         # Load data

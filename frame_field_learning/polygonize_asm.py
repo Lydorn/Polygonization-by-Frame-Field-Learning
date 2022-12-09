@@ -5,6 +5,7 @@ import glob
 import time
 from typing import List
 
+import matplotlib.pyplot as plt
 import numpy as np
 import skan
 import skimage
@@ -59,6 +60,10 @@ def get_args():
         '--angles_map_filepath',
         type=str,
         help='Filepath to frame field angles map.')
+    argparser.add_argument(
+        '--framefield_filepath',
+        type=str,
+        help='Filepath to frame field coefs.')
     argparser.add_argument(
         '--dirpath',
         type=str,
@@ -492,7 +497,6 @@ def shapely_postprocess(polylines, np_indicator, tolerance, config):
 
 
 def post_process(polylines, np_indicator, np_crossfield, config):
-
     # debug_print("Corner-aware simplification")
     # Simplify contours a little to avoid some close-together corner-detection:
     # tic = time.time()
@@ -518,6 +522,7 @@ def get_skeleton(np_edge_mask, config):
     # Pad np_edge_mask first otherwise pixels on the bottom and right are lost after skeletonize:
     pad_width = 2
     np_edge_mask_padded = np.pad(np_edge_mask, pad_width=pad_width, mode="edge")
+    np_edge_mask_padded = skimage.morphology.binary_closing(np_edge_mask_padded)
     skeleton_image = skimage.morphology.skeletonize(np_edge_mask_padded)
     skeleton_image = skeleton_image[pad_width:-pad_width, pad_width:-pad_width]
 
@@ -533,8 +538,16 @@ def get_skeleton(np_edge_mask, config):
     skeleton = Skeleton()
     if 0 < skeleton_image.sum():
         # skan does not work in some cases (paths of 2 pixels or less, etc) which raises a ValueError, in witch case we continue with an empty skeleton.
+
         try:
-            skeleton = skan.Skeleton(skeleton_image, keep_images=False)
+            skeleton = skan.Skeleton(skeleton_image, keep_images=False, junction_mode=skan.csr.JunctionModes.Centroid)
+
+            polylines_coords = skeleton_to_polylines(skeleton)
+            plt.imshow(skeleton_image)
+            for polyline_coords in polylines_coords:
+                plt.plot(polyline_coords[:, 1], polyline_coords[:, 0])
+            plt.show()
+
             # skan.skeleton sometimes returns skeleton.coordinates.shape[0] != skeleton.degrees.shape[0] or
             # skeleton.coordinates.shape[0] != skeleton.paths.indices.max() + 1
             # Slice coordinates accordingly
@@ -1067,6 +1080,72 @@ def main():
                 print("ERROR:", e)
         total_t2 = time.time()
         print(f"Total time: {total_t2 - total_t1:02f}s")
+    elif args.seg_filepath is not None and args.framefield_filepath is not None:
+        total_t1 = time.time()
+        print("Loading data in raw format")
+
+        base_filepath = os.path.splitext(args.seg_filepath)[0]
+        config = {
+            "init_method": "skeleton",  # Can be either skeleton or marching_squares
+            "data_level": 0.5,
+            "loss_params": {
+                "coefs": {
+                    "step_thresholds": [0, 100, 200],  # From 0 to 500: gradually go from coefs[0] to coefs[1]
+                    "data": [1.0, 0.1, 0.0],
+                    "crossfield": [0.0, 0.05, 0.0],
+                    "length": [0.1, 0.01, 0.0],
+                    "curvature": [0.0, 0.0, 0.0],
+                    "corner": [0.0, 0.0, 0.0],
+                    "junction": [0.0, 0.0, 0.0],
+                },
+                "curvature_dissimilarity_threshold": 2,
+                # In pixels: for each sub-paths, if the dissimilarity (in the same sense as in the Ramer-Douglas-Peucker alg) is lower than curvature_dissimilarity_threshold, then optimize the curve angles to be zero.
+                "corner_angles": [45, 90, 135],  # In degrees: target angles for corners.
+                "corner_angle_threshold": 22.5,
+                # If a corner angle is less than this threshold away from any angle in corner_angles, optimize it.
+                "junction_angles": [0, 45, 90, 135],  # In degrees: target angles for junction corners.
+                "junction_angle_weights": [1, 0.01, 0.1, 0.01],
+                # Order of decreassing importance: straight, right-angle, then 45° junction corners.
+                "junction_angle_threshold": 22.5,
+                # If a junction corner angle is less than this threshold away from any angle in junction_angles, optimize it.
+            },
+            "lr": 0.1,
+            "gamma": 0.995,
+            "device": "cpu",
+            "tolerance": 1.0,
+            "seg_threshold": 0.5,
+            "min_area": 10,
+        }
+
+        seg = skimage.io.imread(args.seg_filepath) / 255
+        framefield_coefs = np.load(args.framefield_filepath)
+
+        if args.bbox is not None:
+            assert len(args.bbox) == 4, "bbox should have 4 values"
+            bbox = args.bbox
+            seg = seg[bbox[0]:bbox[2], bbox[1]:bbox[3]]
+            framefield_coefs = framefield_coefs[bbox[0]:bbox[2], bbox[1]:bbox[3]]
+
+        # Convert to torch and add batch dim
+        seg_batch = torch.tensor(np.transpose(seg[:, :, :2], (2, 0, 1)), dtype=torch.float)[None, ...]
+        crossfield_batch = torch.tensor(np.transpose(framefield_coefs, (2, 0, 1)), dtype=torch.float)[None, ...]
+
+        # # Add samples to batch to increase batch size for testing
+        # batch_size = 4
+        # seg_batch = seg_batch.repeat((batch_size, 1, 1, 1))
+        # crossfield_batch = crossfield_batch.repeat((batch_size, 1, 1, 1))
+
+        try:
+            out_contours_batch, out_probs_batch = polygonize(seg_batch, crossfield_batch, config)
+
+            polygons = out_contours_batch[0]
+
+            # Save pdf viz
+            filepath = base_filepath + ".poly_asm.pdf"
+            # plot_utils.save_poly_viz(image, polygons, filepath, linewidths=1, draw_vertices=True, color_choices=[[0, 1, 0, 1]])
+            plot_utils.save_poly_viz(seg, polygons, filepath, markersize=30, linewidths=1, draw_vertices=True)
+        except ValueError as e:
+            print("ERROR:", e)
     elif args.dirpath:
         seg_filename_list = fnmatch.filter(os.listdir(args.dirpath), "*.seg.tif")
         sorted(seg_filename_list)

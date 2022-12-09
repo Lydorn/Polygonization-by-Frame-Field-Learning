@@ -102,7 +102,23 @@ def eval_one(annotation_filename, run_results_dirpath, cocoGt, config, annType, 
         cocoDt = cocoGt.loadRes(new_res)
         # {4601886185638229705, 4602408603195004682, 4597274499619802317, 4600985465712755606, 4597238470822783353,
         #  4597418614807878173}
+    # except TypeError as e:
+    #     print_utils.print_error(f"ERROR: {e}")
+    #     res = json.load(open(res_filepath))
+    #     print(res)
+    #     print(res[0])
+    #     annsImgIds = [ann["image_id"] for ann in res]
+    #     print(annsImgIds)
+    #     raise TypeError(e)
 
+    if True:
+        print("Eval only on valid detected images:")
+        print(len(cocoGt.getImgIds()))
+        res = json.load(open(res_filepath))
+        DtImgIds = set([ann["image_id"] for ann in res])
+        print(len(DtImgIds))
+    else:
+        DtImgIds = None
 
     # image_id = 0
     # annotation_ids = cocoDt.getAnnIds(imgIds=image_id)
@@ -111,7 +127,7 @@ def eval_one(annotation_filename, run_results_dirpath, cocoGt, config, annType, 
 
     if not os.path.exists(stats_filepath):
         # Run COCOeval
-        cocoEval = COCOeval(cocoGt, cocoDt, annType)
+        cocoEval = COCOeval(cocoGt, cocoDt, annType, DtImgIds=DtImgIds)
         cocoEval.evaluate()
         cocoEval.accumulate()
         cocoEval.summarize()
@@ -133,7 +149,7 @@ def eval_one(annotation_filename, run_results_dirpath, cocoGt, config, annType, 
             metrics = {}
             # Run additionnal metrics
             print_utils.print_info("INFO: Running contour metrics")
-            contour_eval = ContourEval(cocoGt, cocoDt)
+            contour_eval = ContourEval(cocoGt, cocoDt, DtImgIds=DtImgIds)
             max_angle_diffs = contour_eval.evaluate(pool=pool)
             metrics["max_angle_diffs"] = list(max_angle_diffs)
             python_utils.save_json(metrics_filepath, metrics)
@@ -158,7 +174,7 @@ def compute_contour_metrics(gts_dts):
 
 
 class ContourEval:
-    def __init__(self, coco_gt, coco_dt):
+    def __init__(self, coco_gt, coco_dt, DtImgIds=None):
         """
 
         @param coco_gt: coco object with ground truth annotations
@@ -167,7 +183,7 @@ class ContourEval:
         self.coco_gt = coco_gt  # ground truth COCO API
         self.coco_dt = coco_dt  # detections COCO API
 
-        self.img_ids = sorted(coco_gt.getImgIds())
+        self.img_ids = sorted(coco_gt.getImgIds(imgIds=DtImgIds))
         self.cat_ids = sorted(coco_dt.getCatIds())
 
     def evaluate(self, pool=None):
@@ -260,7 +276,7 @@ class COCOeval:
     # Data, paper, and tutorials available at:  http://mscoco.org/
     # Code written by Piotr Dollar and Tsung-Yi Lin, 2015.
     # Licensed under the Simplified BSD License [see coco/license.txt]
-    def __init__(self, cocoGt=None, cocoDt=None, iouType='segm'):
+    def __init__(self, cocoGt=None, cocoDt=None, iouType='segm', DtImgIds=None):
         '''
         Initialize CocoEval using coco APIs for gt and dt
         :param cocoGt: coco object with ground truth annotations
@@ -281,7 +297,8 @@ class COCOeval:
         self.stats = []  # result summarization
         self.ious = {}  # ious between all gts and dts
         if cocoGt is not None:
-            self.params.imgIds = sorted(cocoGt.getImgIds())
+            # Restrict eval on Dt ids
+            self.params.imgIds = sorted(cocoGt.getImgIds(imgIds=DtImgIds))
             self.params.catIds = sorted(cocoGt.getCatIds())
 
     def _prepare(self):

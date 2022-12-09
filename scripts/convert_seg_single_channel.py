@@ -8,6 +8,7 @@ from multiprocess import Pool
 from functools import partial
 from tqdm import tqdm
 import cv2
+import glob
 
 try:
     __import__("frame_field_learning.local_utils")
@@ -52,8 +53,13 @@ def main():
     args = get_args()
     print_utils.print_info(f"INFO: converting {len(args.filepath)} seg images.")
 
+    # Glob filepaths
+    globbed_filepaths = []
+    for filepath in args.filepath:
+        globbed_filepaths.extend(glob.glob(filepath))
+
     pool = Pool()
-    list(tqdm(pool.imap(partial(convert_one, out_dirpath=args.out_dirpath), args.filepath), desc="RGB to Gray", total=len(args.filepath)))
+    list(tqdm(pool.imap(partial(convert_one, out_dirpath=args.out_dirpath), globbed_filepaths), desc="RGB to Gray", total=len(globbed_filepaths)))
 
 
 if __name__ == '__main__':

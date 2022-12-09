@@ -2,7 +2,7 @@
   "defaults_filepath": "configs/eval_params.defaults.json",
 
   "save_individual_outputs": {
-    "seg": false,
+    "seg": true,
     "poly_viz": false
   },
 

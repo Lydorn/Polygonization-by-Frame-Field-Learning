@@ -107,6 +107,10 @@ def main():
         {
             "name": "U-Net variant, UResNet101 poly",
             "metrics_filepath": "mapping_dataset.open_solution_full | 0000-00-00 00:00:00/test.metrics.test.annotation.seg_cleaned.poly.json"
+        },
+        {
+            "name": "UResNet101 (with field), ASIP poly.",
+            "metrics_filepath": "mapping_dataset.ours_asip | 0000-00-00 00:00:00/test.metrics.test.annotation.poly.json"
         }
     ]
 

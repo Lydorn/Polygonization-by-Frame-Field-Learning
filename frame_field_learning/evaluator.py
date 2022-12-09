@@ -127,7 +127,8 @@ class Evaluator:
             # Save individual outputs:
             if save_individual_outputs:
                 for sample in sample_list:
-                    saver_async.add_work(sample)
+                    # saver_async.add_work(sample)  # TODO: fix bug in using saver_async
+                    save_outputs_partial(sample)
 
             # Store aggregated outputs:
             if save_aggregated_outputs:

@@ -2,10 +2,9 @@
 
 ###################################################################
 # Use this script to convert .ply results from
-# Li, M., Lafarge, F., Marlet, R.: Approximating shapes in images with low-complexitypolygons. In: CVPR (2020)
+# Li, M., Lafarge, F., Marlet, R.: Approximating shapes in images with low-complexity polygons. In: CVPR (2020)
 # to COCO .json format
 ###################################################################
-
 
 import fnmatch
 import os
