@@ -208,7 +208,7 @@ Because Google Drive reformats folder names, you have to rename the run folders 
 
 If you use this code for your own research, please cite
 
-```
+```bibtex
 @InProceedings{Girard_2021_CVPR,
     author    = {Girard, Nicolas and Smirnov, Dmitriy and Solomon, Justin and Tarabalka, Yuliya},
     title     = {Polygonal Building Extraction by Frame Field Learning},
